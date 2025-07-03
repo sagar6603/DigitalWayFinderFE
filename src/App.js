@@ -1,24 +1,52 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import FunctionalAreaPage from './pages/DigitalWayFinderr/FunctionalAreaPage';
+import ReportPage from './pages/ReportPage';
+import IndustryTypeFullfillment from './pages/DigitalWayFinderr/IndustryTypeFullfillment';
+import IndustryTypePlanning from './pages/DigitalWayFinderr/IndustryTypePlanning';
+import IndustryTypePlanParts from './pages/DigitalWayFinderr/IndustryTypePlanParts';
+import WmsSystem from './pages/DigitalWayFinderr/WmsSystem';
+
+//Decision Tree imports
+import ProjectInfo from './pages/DecisionTree/ProjectInfo';
+import FuncAreaPage from './pages/DecisionTree/FuncAreaPage';
+import IndustryTypeFunc from './pages/DecisionTree/IndustryTypeFunc';
+import IndustryTypePlannD from './pages/DecisionTree/IndustryTypePlannD';
+import FunctionalScope from './pages/DecisionTree/FunctionalScope';
+
+// import FinalPage from './pages/DigitalWayFinderr/FinalPage';
+
 import './App.css';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        <Routes>
+          <Route path="/report" element={<ReportPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/digital-wayfinder" element={<FunctionalAreaPage />} />
+          <Route path="/digital-wayfinder/industry-type-fullfillment" element={<IndustryTypeFullfillment />} />
+          <Route path="/digital-wayfinder/functional-area" element={<FunctionalAreaPage />} />
+          <Route path="/digital-wayfinder/industry-type-planning" element={<IndustryTypePlanning />} />
+          <Route path="/digital-wayfinder/industry-type-plan-parts" element={<IndustryTypePlanParts />} />
+          <Route path="/digital-wayfinder/wms-system" element={<WmsSystem />} />
+
+
+          <Route path="/decision-tree" element={<ProjectInfo />} />
+          <Route path="/decision-tree/functional-area" element={<FuncAreaPage />} />
+          <Route path="/decision-tree/industry-type-func" element={<IndustryTypeFunc />} />
+          <Route path="/decision-tree/industry-type-plannd" element={<IndustryTypePlannD />} />
+          <Route path="/decision-tree/functional-scope" element={<FunctionalScope />} />
+
+          {/* <Route path="/digital-wayfinder/final" element={<FinalPage />} /> */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
