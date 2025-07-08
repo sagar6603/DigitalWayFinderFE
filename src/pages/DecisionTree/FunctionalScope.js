@@ -382,7 +382,6 @@ const FunctionalScope = () => {
                         flexShrink: 0,
                         marginLeft: '8px',
                       }}
-                      title="More information"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -396,6 +395,8 @@ const FunctionalScope = () => {
                           color: '#6b7280',
                           pointerEvents: 'none',
                         }}
+                        aria-hidden="true" // Hide from accessibility tree
+                        focusable="false"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2.25M12 15h.01m-.01-10.5a9 9 0 100 18 9 9 0 000-18z" />
                       </svg>
@@ -567,47 +568,11 @@ const FunctionalScope = () => {
             {/* Right side controls */}
             <div style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '16px',
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+              gap: '8px',
               flexWrap: 'wrap'
             }}>
-              {/* Search */}
-              <div style={{ position: 'relative' }}>
-                <svg
-                  style={{
-                    position: 'absolute',
-                    left: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: '16px',
-                    height: '16px',
-                    color: '#9ca3af'
-                  }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    width: '200px',
-                    paddingLeft: '36px',
-                    paddingRight: '12px',
-                    paddingTop: '8px',
-                    paddingBottom: '8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    backgroundColor: 'white'
-                  }}
-                />
-              </div>
-
               {/* Select Parameters button */}
               <button
                 style={{
@@ -619,17 +584,18 @@ const FunctionalScope = () => {
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '500',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  alignSelf: 'flex-end',
+                  marginBottom: '4px'
                 }}
                 onClick={() => setShowParameterModal(true)}
-
               >
                 Select Parameters
               </button>
 
               {/* Select Level View */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                <span style={{ fontSize: '14px', color: '#4B5563' }}>Select Level View</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                <span style={{ fontSize: '14px', color: '#4B5563', alignSelf: 'flex-end' }}>Select Level View</span>
 
                 {/* Progress Bar */}
                 <div style={{
@@ -637,7 +603,8 @@ const FunctionalScope = () => {
                   width: '150px',
                   height: '6px',
                   backgroundColor: '#E5E7EB',
-                  borderRadius: '3px'
+                  borderRadius: '3px',
+                  alignSelf: 'flex-end'
                 }}>
                   <div style={{
                     width: `${(selectedLevel - 1) / 4 * 100}%`,
@@ -649,7 +616,7 @@ const FunctionalScope = () => {
                 </div>
 
                 {/* Numbers */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '150px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '150px', alignSelf: 'flex-end' }}>
                   {[1, 2, 3, 4, 5].map((level) => (
                     <button
                       key={level}

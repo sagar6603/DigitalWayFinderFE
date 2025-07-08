@@ -243,8 +243,8 @@ const ProjectInfo = () => {
         {/* Navigation Tabs */}
         <div className="nav-tabs">
           <button className="nav-tab active">Project Information</button>
-          <button className="nav-tab">FUNCTIONAL AREA</button>
-          <button className="nav-tab">INDUSTRY TYPE</button>
+          <button className="nav-tab">Functional Area</button>
+          <button className="nav-tab">Industry Type</button>
         </div>
 
         {/* Content Grid */}
