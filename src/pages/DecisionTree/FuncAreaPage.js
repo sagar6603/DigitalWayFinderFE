@@ -13,7 +13,7 @@ function FuncAreaPage() {
   const [projectData, setProjectData] = useState(null);
   const [projectType, setProjectType] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,10 +30,10 @@ function FuncAreaPage() {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     handleResize();
     window.addEventListener('resize', handleResize);
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -62,7 +62,7 @@ function FuncAreaPage() {
   const handleProceed = () => {
     if (selectedArea === 'supply-chain-planning') {
       navigate('/decision-tree/industry-type-plannd', {
-        state: { 
+        state: {
           selectedArea,
           projectData,
           projectType
@@ -70,7 +70,7 @@ function FuncAreaPage() {
       });
     } else if (selectedArea === 'supply-chain-fulfillment') {
       navigate('/decision-tree/industry-type-func', {
-        state: { 
+        state: {
           selectedArea,
           projectData,
           projectType
@@ -100,7 +100,7 @@ function FuncAreaPage() {
         <div className="content-left">
           <h1>Select a Functional Area</h1>
           <p className="subtitle">Begin by choosing a key area</p>
-          
+
           {/* Display project information if available */}
           {projectData && (
             <div className="project-summary">
@@ -109,7 +109,7 @@ function FuncAreaPage() {
           )}
 
           <div className="area-cards">
-            <div 
+            <div
               className={`area-card ${selectedArea === 'supply-chain-planning' ? 'selected' : ''}`}
               onClick={() => handleAreaSelect('supply-chain-planning')}
             >
@@ -122,31 +122,71 @@ function FuncAreaPage() {
                   <p>The process of optimizing the flow of goods and resources to meet demand efficiently.</p>
                 </div>
               </div>
-             <div className="info-icon">
-  <div 
-    className="tooltip-wrapper"
-    onMouseEnter={() => showTooltip('supply-chain-planning')}
-    onMouseLeave={hideTooltip}
-    onClick={() => toggleTooltip('supply-chain-planning')}
-  >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 16V12" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 8H12.01" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {tooltipVisible === 'supply-chain-planning' && (
-                  <div className="tooltip">
-                    <div className="tooltip-header">Supply Chain Planning</div>
-                    <div className="tooltip-content">
-                      {tooltipContent['supply-chain-planning']}
+              <div className="info-icon">
+                <div
+                  className="tooltip-wrapper"
+                  onMouseEnter={() => showTooltip('supply-chain-planning')}
+                  onMouseLeave={hideTooltip}
+                  onClick={() => toggleTooltip('supply-chain-planning')}
+                  tabIndex={-1} // Remove from tab order
+                  style={{ outline: 'none' }} // Remove focus outline
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true" focusable="false" style={{ pointerEvents: 'none' }}>
+                    <circle cx="12" cy="12" r="10" stroke="#666" strokeWidth="2" />
+                    <rect x="11.25" y="7" width="1.5" height="1.5" rx="0.75" fill="#666" />
+                    <rect x="11.25" y="10" width="1.5" height="7" rx="0.75" fill="#666" />
+                  </svg>
+                  {tooltipVisible === 'supply-chain-planning' && (
+                    <div className="tooltip" style={{
+                      position: 'absolute',
+                      left: 'calc(100% + 16px)', // 16px gap to the right of the icon
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      minWidth: '320px',
+                      background: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '6px',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                      padding: '20px 24px',
+                      zIndex: 100,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      fontSize: '16px',
+                      fontWeight: 400
+                    }}>
+                      <div className="tooltip-header" style={{
+                        fontWeight: 600,
+                        fontSize: '18px',
+                        marginBottom: '8px',
+                        color: '#111827',
+                        borderBottom: '1px solid #e5e7eb',
+                        paddingBottom: '8px'
+                      }}>
+                        Supply Chain Planning
+                      </div>
+                      <div className="tooltip-content" style={{ color: '#222', fontSize: '15px', marginTop: '8px' }}>
+                        A centralized platform to track, control, and automate the order process across multiple sales channels, warehouses, and customer touchpoints.
+                      </div>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderTop: '8px solid transparent',
+                        borderBottom: '8px solid transparent',
+                        borderRight: '12px solid #fff',
+                        filter: 'drop-shadow(-1px 0 1px #e5e7eb)'
+                      }} />
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-            </div>
 
-            <div 
+            <div
               className={`area-card ${selectedArea === 'supply-chain-fulfillment' ? 'selected' : ''}`}
               onClick={() => handleAreaSelect('supply-chain-fulfillment')}
             >
@@ -159,34 +199,76 @@ function FuncAreaPage() {
                   <p>The process of delivering orders to customers accurately and on time.</p>
                 </div>
               </div>
-              <div 
-                className="info-icon"
-                onMouseEnter={() => showTooltip('supply-chain-fulfillment')}
-                onMouseLeave={hideTooltip}
-                onClick={() => toggleTooltip('supply-chain-fulfillment')}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 16V12" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 8H12.01" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {tooltipVisible === 'supply-chain-fulfillment' && (
-                  <div className="tooltip">
-                    <div className="tooltip-header">Supply Chain Fulfillment</div>
-                    <div className="tooltip-content">
-                      {tooltipContent['supply-chain-fulfillment']}
+              <div className="info-icon">
+                <div
+                  className="tooltip-wrapper"
+                  onMouseEnter={() => showTooltip('supply-chain-fulfillment')}
+                  onMouseLeave={hideTooltip}
+                  onClick={() => toggleTooltip('supply-chain-fulfillment')}
+                  tabIndex={-1} // Remove from tab order
+                  style={{ outline: 'none' }} // Remove focus outline
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true" focusable="false" style={{ pointerEvents: 'none' }}>
+                    <circle cx="12" cy="12" r="10" stroke="#666" strokeWidth="2" />
+                    <rect x="11.25" y="7" width="1.5" height="1.5" rx="0.75" fill="#666" />
+                    <rect x="11.25" y="10" width="1.5" height="7" rx="0.75" fill="#666" />
+                  </svg>
+                  {tooltipVisible === 'supply-chain-fulfillment' && (
+                    <div className="tooltip" style={{
+                      position: 'absolute',
+                      left: 'calc(100% + 16px)', // 16px gap to the right of the icon
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      minWidth: '320px',
+                      background: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '6px',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                      padding: '20px 24px',
+                      zIndex: 100,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      fontSize: '16px',
+                      fontWeight: 400
+                    }}>
+                      <div className="tooltip-header" style={{
+                        fontWeight: 600,
+                        fontSize: '18px',
+                        marginBottom: '8px',
+                        color: '#111827',
+                        borderBottom: '1px solid #e5e7eb',
+                        paddingBottom: '8px'
+                      }}>
+                        Supply Chain Fulfillment
+                      </div>
+                      <div className="tooltip-content" style={{ color: '#222', fontSize: '15px', marginTop: '8px' }}>
+                        Supply chain fulfillment focuses on the execution of orders and delivery to customers. It encompasses warehousing, order processing, inventory management, and logistics to ensure accurate and timely delivery.
+                      </div>
+                      <div style={{
+                        position: 'absolute',
+                        left: '-12px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderTop: '8px solid transparent',
+                        borderBottom: '8px solid transparent',
+                        borderRight: '12px solid #fff',
+                        filter: 'drop-shadow(-1px 0 1px #e5e7eb)'
+                      }} />
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
-            
+
             {/* Additional functional areas can be added here */}
           </div>
 
           <div className="progress-footer">
             <div className="progress-text">Completed step 1 of 3</div>
-            <button 
+            <button
               className="finish-button"
               disabled={!selectedArea}
               onClick={handleProceed}
@@ -198,10 +280,10 @@ function FuncAreaPage() {
 
         <div className="content-right">
           <div className="preview-container">
-            <img 
-              src={dashboardImage} 
-              alt="Dashboard Preview" 
-              className="dashboard-preview" 
+            <img
+              src={dashboardImage}
+              alt="Dashboard Preview"
+              className="dashboard-preview"
             />
           </div>
         </div>
