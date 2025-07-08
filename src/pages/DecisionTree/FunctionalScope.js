@@ -209,6 +209,7 @@ const FunctionalScope = () => {
     console.log('Info clicked for:', item);
   };
 
+  // Update renderLevelColumn for flat look and proper dividers
   const renderLevelColumn = (level, idx, totalColumns = 5) => {
     const levelItems = getLevelItems(level);
     const levelKey = `l${level}`;
@@ -218,42 +219,44 @@ const FunctionalScope = () => {
       <div
         key={level}
         style={{
-          flex: '1',
-          minWidth: '280px',
-          maxWidth: '300px',
+          flex: '1 1 0',
+          minWidth: 0,
+          maxWidth: 'none',
           backgroundColor: 'white',
-          borderRadius: '0',
-          overflow: 'hidden',
-          opacity: isLevelActive ? 1 : 0.3,
-          transition: 'opacity 0.2s',
-          borderRight: idx < totalColumns - 1 ? '1px solid #e5e7eb' : 'none', // column divider
+          borderRight: idx < totalColumns - 1 ? '1px solid #e5e7eb' : 'none',
           display: 'flex',
           flexDirection: 'column',
+          opacity: isLevelActive ? 1 : 0.3,
+          transition: 'opacity 0.2s',
         }}
       >
-
         {/* Level Header */}
         <div style={{
           backgroundColor: '#f8fafc',
           padding: '12px 16px',
-          borderBottom: '1px solid #e5e7eb'
+          borderBottom: '1px solid #e5e7eb',
+          textAlign: 'left', // changed from center to left
+          minHeight: '64px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'flex-start', // changed from center to flex-start
         }}>
           <h3 style={{
             fontSize: '14px',
-            fontWeight: '600',
+            fontWeight: 600,
             color: '#374151',
             margin: 0,
-            textAlign: 'center'
+            textAlign: 'left', // ensure left alignment
           }}>
             LEVEL {level} PROCESS
           </h3>
-          {/* Show selection count */}
           {selectedPath[levelKey] && selectedPath[levelKey].length > 0 && (
             <div style={{
-              textAlign: 'center',
               fontSize: '12px',
               color: '#7c3aed',
-              marginTop: '4px'
+              marginTop: '4px',
+              textAlign: 'left', // ensure left alignment
             }}>
               {selectedPath[levelKey].length} selected
             </div>
@@ -262,17 +265,17 @@ const FunctionalScope = () => {
 
         {/* Level Content */}
         <div style={{
-          padding: '16px',
+          padding: 0,
           maxHeight: '500px',
           overflowY: 'auto',
-          flex: 1
+          flex: 1,
         }}>
           {!isLevelActive ? (
             <div style={{
               textAlign: 'center',
               padding: '40px 0',
               color: '#9ca3af',
-              fontSize: '14px'
+              fontSize: '14px',
             }}>
               Select from Level {level - 1} to view options
             </div>
@@ -285,7 +288,7 @@ const FunctionalScope = () => {
                 border: '2px solid #e5e7eb',
                 borderTop: '2px solid #7c3aed',
                 borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
+                animation: 'spin 1s linear infinite',
               }}></div>
               <p style={{ marginTop: '8px', color: '#6b7280', fontSize: '12px' }}>Loading...</p>
             </div>
@@ -295,9 +298,9 @@ const FunctionalScope = () => {
               border: '1px solid #fecaca',
               borderRadius: '4px',
               padding: '12px',
-              fontSize: '12px'
+              fontSize: '12px',
             }}>
-              <div style={{ color: '#dc2626', fontWeight: '500' }}>Error</div>
+              <div style={{ color: '#dc2626', fontWeight: 500 }}>Error</div>
               <div style={{ color: '#dc2626', marginTop: '4px' }}>
                 {error}
               </div>
@@ -307,12 +310,12 @@ const FunctionalScope = () => {
               textAlign: 'center',
               padding: '40px 0',
               color: '#6b7280',
-              fontSize: '14px'
+              fontSize: '14px',
             }}>
               No items available
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {levelItems.map((item, i) => {
                 const isSelected = selectedItems.includes(item.id);
                 const isPathSelected = selectedPath[levelKey] && selectedPath[levelKey].includes(item.name);
@@ -323,11 +326,10 @@ const FunctionalScope = () => {
                       display: 'flex',
                       alignItems: 'flex-start',
                       justifyContent: 'space-between',
-                      padding: '10px 12px',
+                      padding: '10px 16px',
                       backgroundColor: isSelected ? '#f0f9ff' : isPathSelected ? '#faf5ff' : 'white',
                       transition: 'all 0.2s',
-                      borderBottom: (level > 1 && i < levelItems.length - 1) ? '1px solid #e5e7eb' : 'none', // row divider for levels 2-5 only
-                      // Removed border and borderRadius for no individual boxes
+                      borderBottom: (level > 1 && i < levelItems.length - 1) ? '1px solid #e5e7eb' : 'none',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
@@ -341,16 +343,16 @@ const FunctionalScope = () => {
                           accentColor: '#7c3aed',
                           marginTop: '2px',
                           flexShrink: 0,
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
                       />
                       <div style={{ flex: 1 }}>
                         <div style={{
-                          fontWeight: isPathSelected ? '600' : '500',
+                          fontWeight: isPathSelected ? 600 : 500,
                           color: isPathSelected ? '#7c3aed' : '#111827',
                           fontSize: '13px',
                           lineHeight: '1.4',
-                          wordBreak: 'break-word'
+                          wordBreak: 'break-word',
                         }}>
                           {level}.{levelItems.indexOf(item) + 1} {item.name}
                           {isPathSelected && (
@@ -360,7 +362,7 @@ const FunctionalScope = () => {
                               backgroundColor: '#7c3aed',
                               color: 'white',
                               padding: '2px 6px',
-                              borderRadius: '12px'
+                              borderRadius: '12px',
                             }}>
                               Selected
                             </span>
@@ -378,7 +380,7 @@ const FunctionalScope = () => {
                         borderRadius: '2px',
                         color: '#9ca3af',
                         flexShrink: 0,
-                        marginLeft: '8px'
+                        marginLeft: '8px',
                       }}
                       title="More information"
                     >
@@ -392,7 +394,7 @@ const FunctionalScope = () => {
                           width: '16px',
                           height: '16px',
                           color: '#6b7280',
-                          pointerEvents: 'none'
+                          pointerEvents: 'none',
                         }}
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2.25M12 15h.01m-.01-10.5a9 9 0 100 18 9 9 0 000-18z" />
@@ -670,19 +672,32 @@ const FunctionalScope = () => {
           </div>
 
           {/* Multi-column layout */}
-          <div style={{
-            display: 'flex',
-            gap: '0',
-            overflowX: 'auto',
-            padding: '0',
-            margin: '24px',
-            border: '2px solid #e5e7eb', // changed to grey border
-            borderRadius: '10px',
-            background: '#fff',
-            boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)'
-          }}>
-            {[1, 2, 3, 4, 5].map((level, idx, arr) => renderLevelColumn(level, idx, arr.length))}
-          </div>
+          {(() => {
+            // Determine which levels to show
+            const columns = [1, 2, 3];
+            if (selectedPath['l3'] && selectedPath['l3'].length > 0) {
+              columns.push(4);
+            }
+            if (selectedPath['l4'] && selectedPath['l4'].length > 0) {
+              columns.push(5);
+            }
+            return (
+              <div style={{
+                display: 'flex',
+                overflowX: 'auto',
+                padding: 0,
+                margin: '24px',
+                border: '1px solid #e5e7eb',
+                borderRadius: 0,
+                background: '#fff',
+                boxShadow: 'none',
+                minHeight: '520px',
+                width: '100%',
+              }}>
+                {columns.map((level, idx) => renderLevelColumn(level, idx, columns.length))}
+              </div>
+            );
+          })()}
 
         </div>
       </div>
