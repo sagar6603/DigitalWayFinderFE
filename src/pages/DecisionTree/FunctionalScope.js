@@ -117,7 +117,7 @@ const FunctionalScope = () => {
     setFunctionalScopeData(mockApiData);
   }, []);
 
-  // Get unique items for a specific level based on selected path
+   // Get unique items for a specific level based on selected path
   const getLevelItems = (level) => {
     if (!functionalScopeData || functionalScopeData.length === 0) return [];
     
@@ -191,15 +191,11 @@ const FunctionalScope = () => {
     setSelectedItems(prev => {
       if (itemIndex > -1) {
         // Remove if already selected
-      if (itemIndex > -1) {
-        // Remove if already selected
         return prev.filter(id => id !== itemId);
       } else {
         // Add if not selected
-        // Add if not selected
         return [...prev, itemId];
       }
-    }
     });
   };
 
@@ -213,10 +209,94 @@ const FunctionalScope = () => {
     e.stopPropagation();
     console.log('Info clicked for:', item);
   };
-
+ // Get hierarchical numbering for items - UPDATED IMPLEMENTATION
+  const getItemNumber = (level, item) => {
+    // Get all level items for the current context
+    const levelItems = getLevelItems(level);
+    const currentIndex = levelItems.findIndex(levelItem => levelItem.name === item.name);
+    
+    if (level === 1) {
+      return `${currentIndex + 1}.0`;
+    }
+    
+    // For higher levels, we need to build hierarchical numbering
+    // Find a full item that contains this level item
+    const fullItem = functionalScopeData.find(dataItem => 
+      dataItem[`l${level}`] === item.name
+    );
+    
+    if (!fullItem) return `${currentIndex + 1}`;
+    
+    // Build hierarchical number
+    const buildNumber = (targetLevel, targetItem) => {
+      const parts = [];
+      
+      // Get L1 position
+      const l1Items = getLevelItems(1);
+      const l1Index = l1Items.findIndex(l1Item => l1Item.name === targetItem.l1);
+      parts.push(l1Index + 1);
+      
+      // Build path for levels 2 through targetLevel
+      let currentContext = [targetItem.l1];
+      
+      for (let i = 2; i <= targetLevel; i++) {
+        // Create temporary selectedPath to get correct context
+        const tempPath = {};
+        for (let j = 1; j < i; j++) {
+          tempPath[`l${j}`] = [targetItem[`l${j}`]];
+        }
+        
+        // Get items for this level in current context
+        let contextData = functionalScopeData.filter(dataItem => {
+          for (let j = 1; j < i; j++) {
+            if (dataItem[`l${j}`] !== targetItem[`l${j}`]) {
+              return false;
+            }
+          }
+          return true;
+        });
+        
+        // Get unique items for this level
+        const levelKey = `l${i}`;
+        const uniqueItems = [];
+        const seen = new Set();
+        
+        contextData.forEach(dataItem => {
+          const value = dataItem[levelKey];
+          if (value && !seen.has(value)) {
+            seen.add(value);
+            uniqueItems.push(value);
+          }
+        });
+        
+        // Find index of current item
+        const itemIndex = uniqueItems.findIndex(uniqueItem => uniqueItem === targetItem[levelKey]);
+        parts.push(itemIndex + 1);
+      }
+      
+      return parts;
+    };
+    
+    const numberParts = buildNumber(level, fullItem);
+    
+    // Format based on level
+    if (level === 1) {
+      return `${numberParts[0]}.0`;
+    } else if (level === 2) {
+      return `${numberParts[0]}.${numberParts[1]}`;
+    } else if (level === 3) {
+      return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}`;
+    } else if (level === 4) {
+      return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}.${numberParts[3]}`;
+    } else if (level === 5) {
+      return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}.${numberParts[3]}.${numberParts[4]}`;
+    }
+    
+    return numberParts.join('.');
+  };
   // Update renderLevelColumn for flat look and proper dividers
   const renderLevelColumn = (level, idx, totalColumns = 5) => {
-    const levelItems = getLevelItems(level);
+    const levelItems = getLevelItems(level); // FIX: use getLevelItems, not getItemNumber
     const levelKey = `l${level}`;
     const isLevelActive = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
 
@@ -323,8 +403,7 @@ const FunctionalScope = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {levelItems.map((item, index) => {
                 const isSelected = selectedItems.includes(item.id);
-                const itemNumber = getLevelItems(level, item);
-                
+                const itemNumber = getItemNumber(level, item); // use getItemNumber for numbering
                 return (
                   <div
                     key={item.id}
