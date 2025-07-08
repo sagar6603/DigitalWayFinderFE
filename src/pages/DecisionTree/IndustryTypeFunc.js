@@ -102,9 +102,9 @@ function IndustryTypeFunc() {
       </div>
 
       <div className="tabs">
-        <div className="tab">PROJECT INFORMATION</div>
-        <div className="tab">FUNCTIONAL AREA</div>
-        <div className="tab active">SUB-FUNCTIONAL AREA</div>
+        <div className="tab">Project Information</div>
+        <div className="tab">Functional Area</div>
+        <div className="tab active">Sub-Functional Area</div>
       </div>
 
       <div className="content-area">

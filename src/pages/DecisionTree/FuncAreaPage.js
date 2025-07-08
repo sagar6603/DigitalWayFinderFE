@@ -91,9 +91,9 @@ function FuncAreaPage() {
       </div>
 
       <div className="tabs">
-        <div className="tab">PROJECT INFORMATION</div>
-        <div className="tab active">SUB-FUNCTIONAL AREA</div>
-        <div className="tab">INDUSTRY TYPE</div>
+        <div className="tab">Project Information</div>
+        <div className="tab active">Sub-Functional Area</div>
+        <div className="tab">Industry Type</div>
       </div>
 
       <div className="content-area">
@@ -128,58 +128,18 @@ function FuncAreaPage() {
                   onMouseEnter={() => showTooltip('supply-chain-planning')}
                   onMouseLeave={hideTooltip}
                   onClick={() => toggleTooltip('supply-chain-planning')}
-                  tabIndex={-1} // Remove from tab order
-                  style={{ outline: 'none' }} // Remove focus outline
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true" focusable="false" style={{ pointerEvents: 'none' }}>
-                    <circle cx="12" cy="12" r="10" stroke="#666" strokeWidth="2" />
-                    <rect x="11.25" y="7" width="1.5" height="1.5" rx="0.75" fill="#666" />
-                    <rect x="11.25" y="10" width="1.5" height="7" rx="0.75" fill="#666" />
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 16V12" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 8H12.01" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   {tooltipVisible === 'supply-chain-planning' && (
-                    <div className="tooltip" style={{
-                      position: 'absolute',
-                      left: 'calc(100% + 16px)', // 16px gap to the right of the icon
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      minWidth: '320px',
-                      background: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                      padding: '20px 24px',
-                      zIndex: 100,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      fontSize: '16px',
-                      fontWeight: 400
-                    }}>
-                      <div className="tooltip-header" style={{
-                        fontWeight: 600,
-                        fontSize: '18px',
-                        marginBottom: '8px',
-                        color: '#111827',
-                        borderBottom: '1px solid #e5e7eb',
-                        paddingBottom: '8px'
-                      }}>
-                        Supply Chain Planning
+                    <div className="tooltip">
+                      <div className="tooltip-header">Supply Chain Planning</div>
+                      <div className="tooltip-content">
+                        {tooltipContent['supply-chain-planning']}
                       </div>
-                      <div className="tooltip-content" style={{ color: '#222', fontSize: '15px', marginTop: '8px' }}>
-                        A centralized platform to track, control, and automate the order process across multiple sales channels, warehouses, and customer touchpoints.
-                      </div>
-                      <div style={{
-                        position: 'absolute',
-                        left: '-12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderTop: '8px solid transparent',
-                        borderBottom: '8px solid transparent',
-                        borderRight: '12px solid #fff',
-                        filter: 'drop-shadow(-1px 0 1px #e5e7eb)'
-                      }} />
                     </div>
                   )}
                 </div>
@@ -205,58 +165,18 @@ function FuncAreaPage() {
                   onMouseEnter={() => showTooltip('supply-chain-fulfillment')}
                   onMouseLeave={hideTooltip}
                   onClick={() => toggleTooltip('supply-chain-fulfillment')}
-                  tabIndex={-1} // Remove from tab order
-                  style={{ outline: 'none' }} // Remove focus outline
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true" focusable="false" style={{ pointerEvents: 'none' }}>
-                    <circle cx="12" cy="12" r="10" stroke="#666" strokeWidth="2" />
-                    <rect x="11.25" y="7" width="1.5" height="1.5" rx="0.75" fill="#666" />
-                    <rect x="11.25" y="10" width="1.5" height="7" rx="0.75" fill="#666" />
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 16V12" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 8H12.01" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   {tooltipVisible === 'supply-chain-fulfillment' && (
-                    <div className="tooltip" style={{
-                      position: 'absolute',
-                      left: 'calc(100% + 16px)', // 16px gap to the right of the icon
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      minWidth: '320px',
-                      background: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '6px',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                      padding: '20px 24px',
-                      zIndex: 100,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      fontSize: '16px',
-                      fontWeight: 400
-                    }}>
-                      <div className="tooltip-header" style={{
-                        fontWeight: 600,
-                        fontSize: '18px',
-                        marginBottom: '8px',
-                        color: '#111827',
-                        borderBottom: '1px solid #e5e7eb',
-                        paddingBottom: '8px'
-                      }}>
-                        Supply Chain Fulfillment
+                    <div className="tooltip">
+                      <div className="tooltip-header">Supply Chain Fulfillment</div>
+                      <div className="tooltip-content">
+                        {tooltipContent['supply-chain-fulfillment']}
                       </div>
-                      <div className="tooltip-content" style={{ color: '#222', fontSize: '15px', marginTop: '8px' }}>
-                        Supply chain fulfillment focuses on the execution of orders and delivery to customers. It encompasses warehousing, order processing, inventory management, and logistics to ensure accurate and timely delivery.
-                      </div>
-                      <div style={{
-                        position: 'absolute',
-                        left: '-12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        width: 0,
-                        height: 0,
-                        borderTop: '8px solid transparent',
-                        borderBottom: '8px solid transparent',
-                        borderRight: '12px solid #fff',
-                        filter: 'drop-shadow(-1px 0 1px #e5e7eb)'
-                      }} />
                     </div>
                   )}
                 </div>
