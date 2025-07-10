@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Add this import
-import './NonFunctionalScope.css';
+// import './NonFunctionalScope.css';
 
 const NonFunctionalScope = () => {
   const navigate = useNavigate(); // Add this hook
