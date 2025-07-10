@@ -1,18 +1,20 @@
 // import React, { useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom'; 
+// import './FunctionalScope.css';
 
 // const FunctionalScope = () => {
+//   const navigate = useNavigate(); 
 //   const [functionalScopeData, setFunctionalScopeData] = useState([]);
-//   const [selectedPath, setSelectedPath] = useState({}); // Will store arrays for each level
+//   const [selectedPath, setSelectedPath] = useState({});
 //   const [searchQuery, setSearchQuery] = useState('');
 //   const [loading, setLoading] = useState(false);
 //   const [error, setError] = useState(null);
 //   const [selectedItems, setSelectedItems] = useState([]);
-//   const [selectedLevel, setSelectedLevel] = useState(2);
+//   const [selectedLevel, setSelectedLevel] = useState(1);
 //   const [showParameterModal, setShowParameterModal] = useState(false);
-//   const [parameterLevel, setParameterLevel] = useState(selectedLevel); // optional, sync to selectedLevel
+//   const [parameterLevel, setParameterLevel] = useState(1);
 
-
-//   // Mock API data - Level 1 shows Finance & Accounting Operations as the main option
+//   // Mock API data
 //   const mockApiData = [
 //     {
 //       "l1": "Finance & Accounting Operations",
@@ -80,7 +82,6 @@
 //       "l3": "Enrich Demand Forecast",
 //       "l4": "Enrich Demand Forecast data"
 //     },
-//     // Adding more mock data for better demonstration
 //     {
 //       "l1": "Human Resources Operations",
 //       "l2": "Talent Management",
@@ -116,12 +117,75 @@
 //   useEffect(() => {
 //     setFunctionalScopeData(mockApiData);
 //   }, []);
+  
+//   // Add this new function for handling Save & Proceed
+//   const handleSaveAndProceed = async () => {
+//     try {
+//       // Validate that user has made selections
+//       if (selectedItems.length === 0) {
+//         setError('Please select at least one requirement before proceeding.');
+//         // Clear error after 3 seconds
+//         setTimeout(() => setError(null), 3000);
+//         return;
+//       }
 
-//    // Get unique items for a specific level based on selected path
-//   const getLevelItems = (level) => {
-//     if (!functionalScopeData || functionalScopeData.length === 0) return [];
+//       // Set loading state
+//       setLoading(true);
+
+//       // Prepare data for next step
+//       const nonFunctionalScopeData = {
+//         selectedItems,
+//         selectedPath,
+//         searchQuery,
+//         selectedLevel,
+//         timestamp: new Date().toISOString()
+//       };
+
+//       // Log current selections for debugging
+//       console.log('Proceeding with selected items:', selectedItems);
+//       console.log('Current path:', selectedPath);
+
+//       // Save to localStorage for persistence across pages
+//       localStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
+
+//       // Optional: You can also save to sessionStorage if you prefer
+//       // sessionStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
+
+//       // Navigate to Decision Criteria page (step 3)
+//       navigate('/decision-tree/non-functional-scope', { 
+//         state: { 
+//           fromNonFunctionalScope: true,
+//           selectedData: nonFunctionalScopeData 
+//         }
+//       });
+
+//     } catch (error) {
+//       console.error('Error saving data:', error);
+//       setError('Failed to save data. Please try again.');
+//       // Clear error after 3 seconds
+//       setTimeout(() => setError(null), 3000);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Filter data based on search query
+//   const getFilteredData = () => {
+//     if (!searchQuery) return functionalScopeData;
     
-//     let filteredData = functionalScopeData;
+//     return functionalScopeData.filter(item => 
+//       Object.values(item).some(value => 
+//         value.toLowerCase().includes(searchQuery.toLowerCase())
+//       )
+//     );
+//   };
+
+//   // Get unique items for a specific level based on selected path
+//   const getLevelItems = (level) => {
+//     const filteredData = getFilteredData();
+//     if (!filteredData || filteredData.length === 0) return [];
+    
+//     let levelData = filteredData;
     
 //     // Filter based on selected path up to the previous level
 //     for (let i = 1; i < level; i++) {
@@ -129,7 +193,7 @@
 //       const selectedForLevel = selectedPath[levelKey];
       
 //       if (selectedForLevel && selectedForLevel.length > 0) {
-//         filteredData = filteredData.filter(item => 
+//         levelData = levelData.filter(item => 
 //           selectedForLevel.includes(item[levelKey])
 //         );
 //       }
@@ -140,7 +204,7 @@
 //     const uniqueItems = [];
 //     const seen = new Set();
     
-//     filteredData.forEach((item, index) => {
+//     levelData.forEach((item) => {
 //       const value = item[levelKey];
 //       if (value && !seen.has(value)) {
 //         seen.add(value);
@@ -160,46 +224,38 @@
 //     const levelKey = `l${level}`;
 //     const newSelectedPath = { ...selectedPath };
     
-//     // Initialize array for this level if it doesn't exist
 //     if (!newSelectedPath[levelKey]) {
 //       newSelectedPath[levelKey] = [];
 //     }
     
-//     // Toggle selection for this item
 //     const currentSelections = [...newSelectedPath[levelKey]];
 //     const itemIndex = currentSelections.indexOf(item.name);
     
 //     if (itemIndex > -1) {
-//       // Remove if already selected
 //       currentSelections.splice(itemIndex, 1);
 //     } else {
-//       // Add if not selected
 //       currentSelections.push(item.name);
 //     }
     
 //     newSelectedPath[levelKey] = currentSelections;
     
-//     // Clear deeper levels when selections change - FIXED: Only clear selectedPath, not selectedItems
+//     // Clear deeper levels when selections change
 //     for (let i = level + 1; i <= 5; i++) {
 //       delete newSelectedPath[`l${i}`];
 //     }
     
 //     setSelectedPath(newSelectedPath);
     
-//     // Update selectedItems for checkboxes - FIXED: Only update current level, don't auto-select deeper levels
 //     const itemId = item.id;
 //     setSelectedItems(prev => {
-//       // Remove any items from deeper levels when parent selection changes
 //       const filteredItems = prev.filter(id => {
 //         const levelFromId = parseInt(id.split('-')[0].replace('l', ''));
 //         return levelFromId <= level;
 //       });
       
 //       if (itemIndex > -1) {
-//         // Remove if already selected
 //         return filteredItems.filter(id => id !== itemId);
 //       } else {
-//         // Add if not selected
 //         return [...filteredItems, itemId];
 //       }
 //     });
@@ -214,9 +270,8 @@
 //     e.stopPropagation();
 //     console.log('Info clicked for:', item);
 //   };
-//  // Get hierarchical numbering for items - UPDATED IMPLEMENTATION
+
 //   const getItemNumber = (level, item) => {
-//     // Get all level items for the current context
 //     const levelItems = getLevelItems(level);
 //     const currentIndex = levelItems.findIndex(levelItem => levelItem.name === item.name);
     
@@ -224,34 +279,20 @@
 //       return `${currentIndex + 1}.0`;
 //     }
     
-//     // For higher levels, we need to build hierarchical numbering
-//     // Find a full item that contains this level item
 //     const fullItem = functionalScopeData.find(dataItem => 
 //       dataItem[`l${level}`] === item.name
 //     );
     
 //     if (!fullItem) return `${currentIndex + 1}`;
     
-//     // Build hierarchical number
 //     const buildNumber = (targetLevel, targetItem) => {
 //       const parts = [];
       
-//       // Get L1 position
 //       const l1Items = getLevelItems(1);
 //       const l1Index = l1Items.findIndex(l1Item => l1Item.name === targetItem.l1);
 //       parts.push(l1Index + 1);
       
-//       // Build path for levels 2 through targetLevel
-//       let currentContext = [targetItem.l1];
-      
 //       for (let i = 2; i <= targetLevel; i++) {
-//         // Create temporary selectedPath to get correct context
-//         const tempPath = {};
-//         for (let j = 1; j < i; j++) {
-//           tempPath[`l${j}`] = [targetItem[`l${j}`]];
-//         }
-        
-//         // Get items for this level in current context
 //         let contextData = functionalScopeData.filter(dataItem => {
 //           for (let j = 1; j < i; j++) {
 //             if (dataItem[`l${j}`] !== targetItem[`l${j}`]) {
@@ -261,7 +302,6 @@
 //           return true;
 //         });
         
-//         // Get unique items for this level
 //         const levelKey = `l${i}`;
 //         const uniqueItems = [];
 //         const seen = new Set();
@@ -274,7 +314,6 @@
 //           }
 //         });
         
-//         // Find index of current item
 //         const itemIndex = uniqueItems.findIndex(uniqueItem => uniqueItem === targetItem[levelKey]);
 //         parts.push(itemIndex + 1);
 //       }
@@ -284,7 +323,6 @@
     
 //     const numberParts = buildNumber(level, fullItem);
     
-//     // Format based on level
 //     if (level === 1) {
 //       return `${numberParts[0]}.0`;
 //     } else if (level === 2) {
@@ -299,170 +337,74 @@
     
 //     return numberParts.join('.');
 //   };
-//   // Update renderLevelColumn for flat look and proper dividers
+
 //   const renderLevelColumn = (level, idx, totalColumns = 5) => {
-//     const levelItems = getLevelItems(level); // FIX: use getLevelItems, not getItemNumber
+//     const levelItems = getLevelItems(level);
 //     const levelKey = `l${level}`;
 //     const isLevelActive = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
 
 //     return (
 //       <div
 //         key={level}
-//         style={{
-//           flex: '1 1 0',
-//           minWidth: '300px', // CHANGED: Added minimum width for better scrolling
-//           maxWidth: 'none',
-//           backgroundColor: 'white',
-//           borderRight: idx < totalColumns - 1 ? '1px solid #e5e7eb' : 'none',
-//           display: 'flex',
-//           flexDirection: 'column',
-//           opacity: isLevelActive ? 1 : 0.3,
-//           transition: 'opacity 0.2s',
-//         }}
+//         className={`column ${isLevelActive ? 'active' : 'inactive'}`}
 //       >
-//         {/* Level Header */}
-//         <div style={{
-//           backgroundColor: '#f8fafc',
-//           padding: '12px 16px',
-//           borderBottom: '1px solid #e5e7eb',
-//           textAlign: 'left', // changed from center to left
-//           minHeight: '64px',
-//           display: 'flex',
-//           flexDirection: 'column',
-//           justifyContent: 'center',
-//           alignItems: 'flex-start', // changed from center to flex-start
-//         }}>
-//           <h3 style={{
-//             fontSize: '14px',
-//             fontWeight: 600,
-//             color: '#374151',
-//             margin: 0,
-//             textAlign: 'left', // ensure left alignment
-//           }}>
+//         <div className="column-header">
+//           <h3 className="column-title">
 //             LEVEL {level} PROCESS
 //           </h3>
 //           {selectedPath[levelKey] && selectedPath[levelKey].length > 0 && (
-//             <div style={{
-//               fontSize: '12px',
-//               color: '#7c3aed',
-//               marginTop: '4px',
-//               textAlign: 'left', // ensure left alignment
-//             }}>
+//             <div className="column-selected">
 //               {selectedPath[levelKey].length} selected
 //             </div>
 //           )}
 //         </div>
 
-//         {/* Level Content */}
-//         <div style={{
-//           padding: 0,
-//           maxHeight: '500px',
-//           overflowY: 'auto',
-//           flex: 1,
-//         }}>
+//         <div className="column-content">
 //           {!isLevelActive ? (
-//             <div style={{
-//               textAlign: 'center',
-//               padding: '30px 0',
-//               color: '#9ca3af',
-//               fontSize: '13px'
-//             }}>
+//             <div className="column-placeholder">
 //               Select from Level {level - 1} to view options
 //             </div>
 //           ) : loading ? (
-//             <div style={{ padding: '30px 0', textAlign: 'center' }}>
-//               <div style={{
-//                 display: 'inline-block',
-//                 width: '20px',
-//                 height: '20px',
-//                 border: '2px solid #e5e7eb',
-//                 borderTop: '2px solid #7c3aed',
-//                 borderRadius: '50%',
-//                 animation: 'spin 1s linear infinite'
-//               }}></div>
-//               <p style={{ marginTop: '6px', color: '#6b7280', fontSize: '11px' }}>Loading...</p>
+//             <div className="loading-container">
+//               <div className="loading-spinner"></div>
+//               <p className="loading-text">Loading...</p>
 //             </div>
 //           ) : error ? (
-//             <div style={{
-//               backgroundColor: '#fef2f2',
-//               border: '1px solid #fecaca',
-//               borderRadius: '4px',
-//               padding: '10px',
-//               fontSize: '11px'
-//             }}>
-//               <div style={{ color: '#dc2626', fontWeight: '500' }}>Error</div>
-//               <div style={{ color: '#dc2626', marginTop: '3px' }}>
-//                 {error}
-//               </div>
+//             <div className="error-container">
+//               <div className="error-title">Error</div>
+//               <div className="error-message">{error}</div>
 //             </div>
 //           ) : levelItems.length === 0 ? (
-//             <div style={{
-//               textAlign: 'center',
-//               padding: '30px 0',
-//               color: '#6b7280',
-//               fontSize: '13px'
-//             }}>
+//             <div className="no-items">
 //               No items available
 //             </div>
 //           ) : (
-//             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+//             <div className="items-container">
 //               {levelItems.map((item, index) => {
 //                 const isSelected = selectedItems.includes(item.id);
-//                 const itemNumber = getItemNumber(level, item); // use getItemNumber for numbering
+//                 const itemNumber = getItemNumber(level, item);
 //                 return (
 //                   <div
 //                     key={item.id}
-//                     style={{
-//                       display: 'flex',
-//                       alignItems: 'flex-start',
-//                       justifyContent: 'space-between',
-//                       padding: '8px 10px',
-//                       border: '1px solid #e5e7eb',
-//                       borderRadius: '5px',
-//                       backgroundColor: 'white',
-//                       transition: 'all 0.2s',
-//                       cursor: 'pointer'
-//                     }}
+//                     className="item"
 //                     onClick={() => handleItemSelect(item, level)}
 //                   >
-//                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
+//                     <div className="item-content">
 //                       <input
 //                         type="checkbox"
 //                         checked={isSelected}
 //                         onChange={(e) => handleCheckboxChange(item, level, e)}
-//                         style={{
-//                           width: '14px',
-//                           height: '14px',
-//                           accentColor: '#7c3aed',
-//                           marginTop: '2px',
-//                           flexShrink: 0,
-//                           cursor: 'pointer'
-//                         }}
+//                         className="item-checkbox"
 //                       />
-//                       <div style={{ flex: 1 }}>
-//                         <div style={{
-//                           fontWeight: '400',
-//                           color: '#374151',
-//                           fontSize: '13px',
-//                           lineHeight: '1.4',
-//                           wordBreak: 'break-word'
-//                         }}>
+//                       <div className="item-text-container">
+//                         <div className="item-text">
 //                           {itemNumber} {item.name}
 //                         </div>
 //                       </div>
 //                     </div>
 //                     <button
 //                       onClick={(e) => handleInfoClick(item, e)}
-//                       style={{
-//                         backgroundColor: 'transparent',
-//                         border: 'none',
-//                         cursor: 'pointer',
-//                         padding: '2px',
-//                         borderRadius: '3px',
-//                         color: '#9ca3af',
-//                         flexShrink: 0,
-//                         marginLeft: '8px'
-//                       }}
+//                       className="item-info-button"
 //                       title="More information"
 //                     >
 //                       <svg
@@ -471,11 +413,7 @@
 //                         viewBox="0 0 24 24"
 //                         strokeWidth={1.5}
 //                         stroke="currentColor"
-//                         style={{
-//                           width: '16px',
-//                           height: '16px',
-//                           color: '#9ca3af'
-//                         }}
+//                         className="item-info-icon"
 //                       >
 //                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2.25M12 15h.01m-.01-10.5a9 9 0 100 18 9 9 0 000-18z" />
 //                       </svg>
@@ -491,226 +429,110 @@
 //   };
 
 //   return (
-//     <div style={{
-//       minHeight: '100vh',
-//       backgroundColor: '#f8fafc',
-//       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-//     }}>
-//       <style>{`
-//         @keyframes spin {
-//           0% { transform: rotate(0deg); }
-//           100% { transform: rotate(360deg); }
-//         }
-//       `}</style>
-      
+//     <div className="functional-scope-container">
 //       {/* Breadcrumb */}
-//       <div style={{
-//         padding: '12px 24px',
-//         backgroundColor: 'white',
-//         borderBottom: '1px solid #e5e7eb'
-//       }}>
-//         <div style={{
-//           display: 'flex',
-//           alignItems: 'center',
-//           gap: '8px',
-//           fontSize: '14px',
-//           color: '#6b7280'
-//         }}>
-//           <span>Home</span>
+//       <div className="breadcrumb">
+//         <div className="breadcrumb-content">
+//           <span className="breadcrumb-link" style={{ color: '#0036C9' }}>Home</span>
 //           <span>›</span>
-//           <span>Decision Tree</span>
+//           <span className="breadcrumb-link " style={{ color: '#0036C9' }}>Decision Tree</span>
 //           <span>›</span>
-//           <span style={{ color: '#111827' }}>Functional Scope</span>
+//           <span className="breadcrumb-current">Functional Scope</span>
 //         </div>
 //       </div>
 
-//       <div style={{ 
-//         display: 'flex',
-//         padding: '24px',
-//         gap: '24px',
-//         minHeight: 'calc(100vh - 120px)'
-//       }}>
+//       <div className="main-layout">
 //         {/* Left Sidebar Box */}
-//         <div style={{
-//           width: '280px',
-//           backgroundColor: 'white',
-//           border: '1px solid #e5e7eb',
-//           borderRadius: '8px',
-//           padding: '24px',
-//           height: 'fit-content',
-//           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
-//         }}>
-//           <h2 style={{
-//             fontSize: '20px',
-//             fontWeight: '600',
-//             marginBottom: '8px',
-//             color: '#111827'
-//           }}>Functional Scope</h2>
-//           <p style={{
-//             fontSize: '14px',
-//             color: '#6b7280',
-//             marginBottom: '24px',
-//             lineHeight: '1.5'
-//           }}>
+//         <div className="left-sidebar">
+//           <h2 className="sidebar-title">Functional Scope</h2>
+//           <p className="sidebar-description">
 //             Structured framework for selecting functional requirements,
 //             prioritising them based on different measures for informed decision-making.
 //           </p>
 
-
+//           {/* Vertical line connecting all steps */}
+//           <div className="step-line"></div>
 
 //           {/* Step indicators */}
-//           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-//             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-//               <div style={{
-//                 width: '24px',
-//                 height: '24px',
-//                 backgroundColor: '#7c3aed',
-//                 borderRadius: '50%',
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 justifyContent: 'center',
-//                 color: 'white',
-//                 fontSize: '12px',
-//                 fontWeight: '600'
-//               }}>
-//                 1
-//               </div>
-//               <span style={{ color: '#7c3aed', fontWeight: '500', fontSize: '14px' }}>Functional Scope</span>
-      
+//           <div className="steps-container">
+//             <div className="step-item">
+//               <div className="step-circle active">1</div>
+//               <span className="step-text active">Functional Scope</span>
 //             </div>
-//             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-//               <div style={{
-//                 width: '24px',
-//                 height: '24px',
-//                 backgroundColor: '#d1d5db',
-//                 borderRadius: '50%',
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 justifyContent: 'center',
-//                 color: 'white',
-//                 fontSize: '12px',
-  
-//                 fontWeight: '600'
-//               }}>
-//                 2
-//               </div>
-//               <span style={{ color: '#9ca3af', fontSize: '14px' }}>Decision Criteria</span>
-//             </div>
-//             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             
-//               <div style={{
-//                 width: '24px',
-//                 height: '24px',
-//                 backgroundColor: '#d1d5db',
-//                 borderRadius: '50%',
-//                 display: 'flex',
-//                 alignItems: 'center',
-//                 justifyContent: 'center',
-//                 color: 'white',
-//                 fontSize: '12px',
-//                 fontWeight: '600'
-//               }}>
-//                 3
-//               </div>
-//               <span style={{ color: '#9ca3af', fontSize: '14px' }}>Solution</span>
+//             <div className="step-item">
+//               <div className="step-circle inactive">2</div>
+//               <span className="step-text inactive">Non Functional</span>
+//             </div>
+            
+//             <div className="step-item">
+//               <div className="step-circle inactive">3</div>
+//               <span className="step-text inactive">Decision Criteria</span>
+//             </div>
+            
+//             <div className="step-item">
+//               <div className="step-circle inactive">4</div>
+//               <span className="step-text inactive">Solution</span>
 //             </div>
 //           </div>
 //         </div>
 
 //         {/* Main Content Box */}
-//         <div style={{
-//           flex: 1,
-//           backgroundColor: 'white',
-//           border: '1px solid #e5e7eb',
-//           borderRadius: '8px',
-//           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-//           overflow: 'hidden'
-//         }}>
-//           {/* Header with search, parameters and level view selector */}
-//           <div style={{
-//             display: 'flex',
-//             justifyContent: 'space-between',
-//             alignItems: 'center',
-//             padding: '20px 24px',
-//             borderBottom: '1px solid #e5e7eb',
-//             backgroundColor: '#f9fafb',
-//             flexWrap: 'wrap',
-//             gap: '16px'
-//           }}>
-//             {/* Title */}
-//             <h1 style={{
-//               fontSize: '20px',
-//               fontWeight: '600',
-//               color: '#111827',
-//               margin: 0
-//             }}>
-//               Functional Scope
-//             </h1>
+//         <div className="main-content">
+//           {/* Header with search and parameters */}
+//           <div className="content-header">
+//             {/* Search Bar */}
+//             <div className="search-container">
+//               <input
+//                 type="text"
+//                 placeholder="Search..."
+//                 value={searchQuery}
+//                 onChange={(e) => setSearchQuery(e.target.value)}
+//                 className="search-input"
+//               />
+//               <svg
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 fill="none"
+//                 viewBox="0 0 24 24"
+//                 strokeWidth={2}
+//                 stroke="#8b5cf6"
+//                 className="search-icon"
+//               >
+//                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+//               </svg>
+//             </div>
 
-//             {/* Right side controls */}
-//             <div style={{
-//               display: 'flex',
-//               flexDirection: 'column',
-//               alignItems: 'flex-end',
-//               gap: '8px',
-//               flexWrap: 'wrap'
-//             }}>
-//               {/* Select Parameters button */}
+//             <div className="header-buttons">
 //               <button
-//                 style={{
-//                   backgroundColor: '#8b5cf6',
-//                   color: 'white',
-//                   padding: '8px 16px',
-//                   borderRadius: '20px',
-//                   border: 'none',
-//                   cursor: 'pointer',
-//                   fontSize: '14px',
-//                   fontWeight: '500',
-//                   whiteSpace: 'nowrap',
-//                   alignSelf: 'flex-end',
-//                   marginBottom: '4px'
-//                 }}
+//                 className="parameter-button"
 //                 onClick={() => setShowParameterModal(true)}
 //               >
 //                 Select Parameters
 //               </button>
+//             </div>
+//           </div>
 
-//               {/* Select Level View */}
-//               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-//                 <span style={{ fontSize: '14px', color: '#4B5563', alignSelf: 'flex-end' }}>Select Level View</span>
+//           {/* Functional Scope Header and Select Level View */}
+//           <div className="title-section">
+//             <h1 className="page-title">Functional Scope</h1>
 
-//                 {/* Progress Bar */}
-//                 <div style={{
-//                   position: 'relative',
-//                   width: '150px',
-//                   height: '6px',
-//                   backgroundColor: '#E5E7EB',
-//                   borderRadius: '3px',
-//                   alignSelf: 'flex-end'
-//                 }}>
-//                   <div style={{
-//                     width: `${(selectedLevel - 1) / 4 * 100}%`,
-//                     height: '6px',
-//                     backgroundColor: '#2563eb',
-//                     borderRadius: '3px',
-//                     transition: 'width 0.3s'
-//                   }} />
+//             <div className="level-controls">
+//               <div className="level-control-row">
+//                 <span className="level-label">Select Level View</span>
+
+//                 <div className="level-progress">
+//                   <div 
+//                     className="level-progress-fill"
+//                     style={{ width: `${(selectedLevel) / 5 * 100}%` }}
+//                   />
 //                 </div>
 
-//                 {/* Numbers */}
-//                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '150px', alignSelf: 'flex-end' }}>
+//                 <div className="level-buttons">
 //                   {[1, 2, 3, 4, 5].map((level) => (
 //                     <button
 //                       key={level}
 //                       onClick={() => setSelectedLevel(level)}
-//                       style={{
-//                         border: 'none',
-//                         background: 'none',
-//                         cursor: 'pointer',
-//                         fontSize: '14px',
-//                         fontWeight: selectedLevel === level ? '600' : '400',
-//                         color: selectedLevel === level ? '#2563eb' : '#111827'
-//                       }}
+//                       className={`level-button ${selectedLevel === level ? 'active' : 'inactive'}`}
 //                     >
 //                       {level}
 //                     </button>
@@ -720,151 +542,66 @@
 //             </div>
 //           </div>
 
-//           {/* Multi-column layout - CHANGED: Added proper scrolling container */}
-//           {(() => {
-//             // Determine which levels to show - CHANGED: Show all 5 levels for better navigation
-//             const columns = [1, 2, 3, 4, 5];
-            
-//             return (
-//               <div style={{
-//                 display: 'flex',
-//                 overflowX: 'auto', // CHANGED: Horizontal scroll for columns
-//                 overflowY: 'hidden',
-//                 padding: 0,
-//                 margin: '24px',
-//                 border: '1px solid #e5e7eb',
-//                 borderRadius: 0,
-//                 background: '#fff',
-//                 boxShadow: 'none',
-//                 minHeight: '520px',
-//                 maxHeight: '520px', // CHANGED: Fixed height to enable scrolling
-//                 width: 'calc(100% - 48px)', // CHANGED: Adjusted width for margin
-//               }}>
-//                 {columns.map((level, idx) => renderLevelColumn(level, idx, columns.length))}
-//               </div>
-//             );
-//           })()}
-
+//           {/* Multi-column layout */}
+//           <div className="columns-container">
+//             {[1, 2, 3, 4, 5].map((level, idx) => renderLevelColumn(level, idx, 5))}
+//           </div>
 //         </div>
 //       </div>
 
 //       {/* Footer */}
-//       <div style={{
-//         position: 'fixed',
-//         bottom: 0,
-//         left: 0,
-//         right: 0,
-//         backgroundColor: 'white',
-//         borderTop: '1px solid #e5e7eb',
-//         padding: '16px 24px',
-//         zIndex: 10
-//       }}>
-//         <div style={{
-//           display: 'flex',
-//           justifyContent: 'end',
-//           alignItems: 'center'
-//         }}>
+//       <div className="footer">
+//         <div className="footer-content">
 //           <button
-//             style={{
-//               backgroundColor: '#7c3aed',
-//               color: 'white',
-//               padding: '8px 16px',
-//               borderRadius: '8px',
-//               border: 'none',
-//               cursor: 'pointer',
-//               fontSize: '14px',
-//               fontWeight: '500'
-//             }}
-//             onClick={() => {
-//               console.log('Proceeding with selected items:', selectedItems);
-//               console.log('Current path:', selectedPath);
-//             }}
+//             className="proceed-button"
+//             onClick={handleSaveAndProceed}
+//             disabled={loading}
 //           >
-//             Save & Proceed
+//             {loading ? 'Saving...' : 'Save & Proceed'}
+          
+            
 //           </button>
 //         </div>
 //       </div>
+
+//       {/* Parameter Modal */}
 //       {showParameterModal && (
-//         <div style={{
-//           position: 'fixed',
-//           top: 0,
-//           left: 0,
-//           right: 0,
-//           bottom: 0,
-//           backgroundColor: 'rgba(0,0,0,0.3)',
-//           display: 'flex',
-//           alignItems: 'center',
-//           justifyContent: 'center',
-//           zIndex: 50
-//         }}>
-//           <div style={{
-//             backgroundColor: 'white',
-//             borderRadius: '12px',
-//             width: '400px',
-//             maxWidth: '90%',
-//             padding: '24px',
-//             position: 'relative',
-//             boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
-//           }}>
-//             <h2 style={{
-//               marginBottom: '16px',
-//               fontSize: '18px',
-//               fontWeight: '600',
-
-
-
-
-//               borderBottom: '1px solid #eee',
-//               paddingBottom: '12px'
-//             }}>
+//         <div className="modal-overlay">
+//           <div className="modal-content">
+//             <h2 className="modal-header">
 //               Select Parameters
-//               <button onClick={() => setShowParameterModal(false)} style={{
-//                 position: 'absolute',
-//                 top: '16px',
-//                 right: '16px',
-//                 background: 'none',
-//                 border: 'none',
-//                 fontSize: '20px',
-//                 cursor: 'pointer',
-//                 color: '#6b7280'
-//               }}>&times;</button>
+//               <button 
+//                 onClick={() => setShowParameterModal(false)} 
+//                 className="modal-close"
+//               >
+//                 &times;
+//               </button>
 //             </h2>
 
 //             <div>
-//               <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#7c3aed' }}>
-//                 Process Granularity
-//               </div>
+//               <div className="modal-section-title">Process Granularity</div>
 //               {[1, 2, 3, 4, 5].map((level) => (
-//                 <label key={level} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', fontSize: '14px' }}>
+//                 <label key={level} className="modal-option">
 //                   <input
 //                     type="radio"
 //                     name="parameterLevel"
 //                     value={level}
 //                     checked={parameterLevel === level}
 //                     onChange={() => setParameterLevel(level)}
-//                     style={{ marginRight: '8px' }}
+//                     className="modal-radio"
 //                   />
 //                   Level {level}
 //                 </label>
 //               ))}
 //             </div>
 
-//             <div style={{ marginTop: '24px', textAlign: 'right' }}>
+//             <div className="modal-footer">
 //               <button
 //                 onClick={() => {
 //                   setSelectedLevel(parameterLevel);
 //                   setShowParameterModal(false);
 //                 }}
-//                 style={{
-//                   backgroundColor: '#7c3aed',
-//                   color: 'white',
-//                   padding: '8px 16px',
-//                   borderRadius: '8px',
-//                   border: 'none',
-//                   cursor: 'pointer',
-//                   fontSize: '14px',
-//                   fontWeight: '500'
-//                 }}
+//                 className="modal-save-button"
 //               >
 //                 Save
 //               </button>
@@ -872,7 +609,6 @@
 //           </div>
 //         </div>
 //       )}
-
 //     </div>
 //   );
 // };
@@ -880,11 +616,12 @@
 // export default FunctionalScope;
 
 
-
-
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+// import './FunctionalScope.css';
 
 const FunctionalScope = () => {
+  const navigate = useNavigate(); 
   const [functionalScopeData, setFunctionalScopeData] = useState([]);
   const [selectedPath, setSelectedPath] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -998,6 +735,55 @@ const FunctionalScope = () => {
   useEffect(() => {
     setFunctionalScopeData(mockApiData);
   }, []);
+  
+  // Add this new function for handling Save & Proceed
+  const handleSaveAndProceed = async () => {
+    try {
+      // Validate that user has made selections
+      if (selectedItems.length === 0) {
+        setError('Please select at least one requirement before proceeding.');
+        // Clear error after 3 seconds
+        setTimeout(() => setError(null), 3000);
+        return;
+      }
+
+      // Set loading state
+      setLoading(true);
+
+      // Prepare data for next step
+      const nonFunctionalScopeData = {
+        selectedItems,
+        selectedPath,
+        searchQuery,
+        selectedLevel,
+        timestamp: new Date().toISOString()
+      };
+
+      // Log current selections for debugging
+      console.log('Proceeding with selected items:', selectedItems);
+      console.log('Current path:', selectedPath);
+
+      // Note: localStorage is not available in this environment
+      // In a real application, you would save to localStorage like this:
+      // localStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
+
+      // Navigate to Decision Criteria page (step 3)
+      navigate('/decision-tree/non-functional-scope', { 
+        state: { 
+          fromNonFunctionalScope: true,
+          selectedData: nonFunctionalScopeData 
+        }
+      });
+
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setError('Failed to save data. Please try again.');
+      // Clear error after 3 seconds
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter data based on search query
   const getFilteredData = () => {
@@ -1176,159 +962,65 @@ const FunctionalScope = () => {
     return (
       <div
         key={level}
-        style={{
-          flex: '1 1 0',
-          minWidth: '300px',
-          maxWidth: 'none',
-          backgroundColor: 'white',
-          borderRight: idx < totalColumns - 1 ? '1px solid #e5e7eb' : 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          opacity: isLevelActive ? 1 : 0.3,
-          transition: 'opacity 0.2s',
-        }}
+        className={`column ${isLevelActive ? 'active' : 'inactive'}`}
       >
-        <div style={{
-          backgroundColor: '#f8fafc',
-          padding: '12px 16px',
-          borderBottom: '1px solid #e5e7eb',
-          textAlign: 'left',
-          minHeight: '64px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-        }}>
-          <h3 style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#374151',
-            margin: 0,
-            textAlign: 'left',
-          }}>
+        <div className="column-header">
+          <h3 className="column-title">
             LEVEL {level} PROCESS
           </h3>
           {selectedPath[levelKey] && selectedPath[levelKey].length > 0 && (
-            <div style={{
-              fontSize: '12px',
-              color: '#7c3aed',
-              marginTop: '4px',
-              textAlign: 'left',
-            }}>
+            <div className="column-selected">
               {selectedPath[levelKey].length} selected
             </div>
           )}
         </div>
 
-        <div style={{
-          padding: 0,
-          maxHeight: '500px',
-          overflowY: 'auto',
-          flex: 1,
-        }}>
+        <div className="column-content">
           {!isLevelActive ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '30px 0',
-              color: '#9ca3af',
-              fontSize: '13px'
-            }}>
+            <div className="column-placeholder">
               Select from Level {level - 1} to view options
             </div>
           ) : loading ? (
-            <div style={{ padding: '30px 0', textAlign: 'center' }}>
-              <div style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '20px',
-                border: '2px solid #e5e7eb',
-                borderTop: '2px solid #7c3aed',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
-              <p style={{ marginTop: '6px', color: '#6b7280', fontSize: '11px' }}>Loading...</p>
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p className="loading-text">Loading...</p>
             </div>
           ) : error ? (
-            <div style={{
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: '4px',
-              padding: '10px',
-              fontSize: '11px'
-            }}>
-              <div style={{ color: '#dc2626', fontWeight: '500' }}>Error</div>
-              <div style={{ color: '#dc2626', marginTop: '3px' }}>
-                {error}
-              </div>
+            <div className="error-container">
+              <div className="error-title">Error</div>
+              <div className="error-message">{error}</div>
             </div>
           ) : levelItems.length === 0 ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '30px 0',
-              color: '#6b7280',
-              fontSize: '13px'
-            }}>
+            <div className="no-items">
               No items available
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div className="items-container">
               {levelItems.map((item, index) => {
                 const isSelected = selectedItems.includes(item.id);
                 const itemNumber = getItemNumber(level, item);
                 return (
                   <div
                     key={item.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'space-between',
-                      padding: '8px 10px',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '5px',
-                      backgroundColor: 'white',
-                      transition: 'all 0.2s',
-                      cursor: 'pointer'
-                    }}
+                    className="item"
                     onClick={() => handleItemSelect(item, level)}
                   >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flex: 1 }}>
+                    <div className="item-content">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={(e) => handleCheckboxChange(item, level, e)}
-                        style={{
-                          width: '14px',
-                          height: '14px',
-                          accentColor: '#7c3aed',
-                          marginTop: '2px',
-                          flexShrink: 0,
-                          cursor: 'pointer'
-                        }}
+                        className="item-checkbox"
                       />
-                      <div style={{ flex: 1 }}>
-                        <div style={{
-                          fontWeight: '400',
-                          color: '#374151',
-                          fontSize: '13px',
-                          lineHeight: '1.4',
-                          wordBreak: 'break-word'
-                        }}>
+                      <div className="item-text-container">
+                        <div className="item-text">
                           {itemNumber} {item.name}
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={(e) => handleInfoClick(item, e)}
-                      style={{
-                        backgroundColor: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: '2px',
-                        borderRadius: '3px',
-                        color: '#9ca3af',
-                        flexShrink: 0,
-                        marginLeft: '8px'
-                      }}
+                      className="item-info-button"
                       title="More information"
                     >
                       <svg
@@ -1337,11 +1029,7 @@ const FunctionalScope = () => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          color: '#9ca3af'
-                        }}
+                        className="item-info-icon"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2.25M12 15h.01m-.01-10.5a9 9 0 100 18 9 9 0 000-18z" />
                       </svg>
@@ -1356,244 +1044,88 @@ const FunctionalScope = () => {
     );
   };
 
+  // Calculate progress width percentage for level progress bar
+  const getProgressWidth = () => {
+    return `${(selectedLevel) / 5 * 100}%`;
+  };
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f8fafc',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-    }}>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-      
+    <div className="functional-scope-container">
       {/* Breadcrumb */}
-      <div style={{
-        padding: '12px 24px',
-        backgroundColor: 'white',
-        borderBottom: '1px solid #e5e7eb'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          fontSize: '14px',
-          color: '#6b7280'
-        }}>
-          <span style={{ color: '#0036C9' }}>Home</span>
+      <div className="breadcrumb">
+        <div className="breadcrumb-content">
+          <span className="breadcrumb-link">Home</span>
           <span>›</span>
-          <span style={{ color: '#0036C9', textDecoration: 'underline' }}>Decision Tree</span>
+          <span className="breadcrumb-link">Decision Tree</span>
           <span>›</span>
-          <span style={{ color: '#111827' }}>Functional Scope</span>
+          <span className="breadcrumb-current">Functional Scope</span>
         </div>
       </div>
 
-      <div style={{ 
-        display: 'flex',
-        padding: '24px',
-        gap: '24px',
-        minHeight: 'calc(100vh - 120px)'
-      }}>
+      <div className="main-layout">
         {/* Left Sidebar Box */}
-        <div style={{
-          width: '280px',
-          backgroundColor: 'white',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px',
-          padding: '24px',
-          height: 'fit-content',
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-          position: 'relative'
-        }}>
-          <h2 style={{
-            fontSize: '20px',
-            fontWeight: '600',
-            marginBottom: '8px',
-            color: '#111827'
-          }}>Functional Scope</h2>
-          <p style={{
-            fontSize: '14px',
-            color: '#6b7280',
-            marginBottom: '24px',
-            lineHeight: '1.5'
-          }}>
+        <div className="left-sidebar">
+          <h2 className="sidebar-title">Functional Scope</h2>
+          <p className="sidebar-description">
             Structured framework for selecting functional requirements,
             prioritising them based on different measures for informed decision-making.
           </p>
 
           {/* Vertical line connecting all steps */}
-          <div style={{
-            position: 'absolute',
-            left: '36px',
-            top: '140px',
-            bottom: '24px',
-            width: '2px',
-            backgroundColor: '#d1d5db',
-            zIndex: 1
-          }}></div>
+          <div className="step-line"></div>
 
           {/* Step indicators */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'relative', zIndex: 2 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#7c3aed',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '600'
-              }}>
-                1
-              </div>
-              <span style={{ color: '#7c3aed', fontWeight: '500', fontSize: '14px' }}>Functional Scope</span>
+          <div className="steps-container">
+            <div className="step-item">
+              <div className="step-circle active">1</div>
+              <span className="step-text active">Functional Scope</span>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#d1d5db',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '600'
-              }}>
-                2
-              </div>
-              <span style={{ color: '#9ca3af', fontSize: '14px' }}>Non Functional</span>
+            <div className="step-item">
+              <div className="step-circle inactive">2</div>
+              <span className="step-text inactive">Non Functional</span>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#d1d5db',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '600'
-              }}>
-                3
-              </div>
-              <span style={{ color: '#9ca3af', fontSize: '14px' }}>Decision Criteria</span>
+            <div className="step-item">
+              <div className="step-circle inactive">3</div>
+              <span className="step-text inactive">Decision Criteria</span>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#d1d5db',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '600'
-              }}>
-                4
-              </div>
-              <span style={{ color: '#9ca3af', fontSize: '14px' }}>Solution</span>
+            <div className="step-item">
+              <div className="step-circle inactive">4</div>
+              <span className="step-text inactive">Solution</span>
             </div>
           </div>
         </div>
 
         {/* Main Content Box */}
-        <div style={{
-          flex: 1,
-          backgroundColor: 'white',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-          overflow: 'hidden'
-        }}>
+        <div className="main-content">
           {/* Header with search and parameters */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '20px 24px',
-            borderBottom: '1px solid #e5e7eb',
-            backgroundColor: '#f9fafb',
-            flexWrap: 'wrap',
-            gap: '16px'
-          }}>
+          <div className="content-header">
             {/* Search Bar */}
-            <div style={{
-              position: 'relative',
-              maxWidth: '400px',
-              flex: 1
-            }}>
+            <div className="search-container">
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px 8px 36px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#7c3aed';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                }}
+                className="search-input"
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                style={{
-                  position: 'absolute',
-                  left: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: '16px',
-                  height: '16px',
-                  color: '#9ca3af'
-                }}
+                strokeWidth={2}
+                stroke="#8b5cf6"
+                className="search-icon"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             </div>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '16px'
-            }}>
+            <div className="header-buttons">
               <button
-                style={{
-                  backgroundColor: '#8b5cf6',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  whiteSpace: 'nowrap'
-                }}
+                className="parameter-button"
                 onClick={() => setShowParameterModal(true)}
               >
                 Select Parameters
@@ -1602,62 +1134,26 @@ const FunctionalScope = () => {
           </div>
 
           {/* Functional Scope Header and Select Level View */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 24px',
-            borderBottom: '1px solid #e5e7eb',
-            backgroundColor: '#fff'
-          }}>
-            <h1 style={{
-              fontSize: '20px',
-              fontWeight: '600',
-              color: '#111827',
-              margin: 0
-            }}>
-              Functional Scope
-            </h1>
+          <div className="title-section">
+            <h1 className="page-title">Functional Scope</h1>
 
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-end',
-              gap: '8px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '14px', color: '#4B5563' }}>Select Level View</span>
+            <div className="level-controls">
+              <div className="level-control-row">
+                <span className="level-label">Select Level View</span>
 
-                <div style={{
-                  position: 'relative',
-                  width: '100px',
-                  height: '4px',
-                  backgroundColor: '#E5E7EB',
-                  borderRadius: '2px'
-                }}>
-                  <div style={{
-                    width: `${(selectedLevel) / 5 * 100}%`,
-                    height: '4px',
-                    backgroundColor: '#2563eb',
-                    borderRadius: '2px',
-                    transition: 'width 0.3s'
-                  }} />
+                <div className="level-progress">
+                  <div 
+                    className="level-progress-fill"
+                    style={{ width: getProgressWidth() }}
+                  />
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="level-buttons">
                   {[1, 2, 3, 4, 5].map((level) => (
                     <button
                       key={level}
                       onClick={() => setSelectedLevel(level)}
-                      style={{
-                        border: 'none',
-                        background: 'none',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        fontWeight: selectedLevel === level ? '600' : '400',
-                        color: selectedLevel === level ? '#2563eb' : '#111827',
-                        padding: '2px 4px'
-                      }}
+                      className={`level-button ${selectedLevel === level ? 'active' : 'inactive'}`}
                     >
                       {level}
                     </button>
@@ -1668,147 +1164,63 @@ const FunctionalScope = () => {
           </div>
 
           {/* Multi-column layout */}
-          {(() => {
-            const columns = [1, 2, 3, 4, 5];
-            
-            return (
-              <div style={{
-                display: 'flex',
-                overflowX: 'auto',
-                overflowY: 'hidden',
-                padding: 0,
-                margin: '24px',
-                border: '1px solid #e5e7eb',
-                borderRadius: 0,
-                background: '#fff',
-                boxShadow: 'none',
-                minHeight: '520px',
-                maxHeight: '520px',
-                width: 'calc(100% - 48px)',
-              }}>
-                {columns.map((level, idx) => renderLevelColumn(level, idx, columns.length))}
-              </div>
-            );
-          })()}
-
+          <div className="columns-container">
+            {[1, 2, 3, 4, 5].map((level, idx) => renderLevelColumn(level, idx, 5))}
+          </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'white',
-        borderTop: '1px solid #e5e7eb',
-        padding: '16px 24px',
-        zIndex: 10
-      }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'end',
-          alignItems: 'center'
-        }}>
+      <div className="footer">
+        <div className="footer-content">
           <button
-            style={{
-              backgroundColor: '#7c3aed',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-            onClick={() => {
-              console.log('Proceeding with selected items:', selectedItems);
-              console.log('Current path:', selectedPath);
-            }}
+            className="proceed-button"
+            onClick={handleSaveAndProceed}
+            disabled={loading}
           >
-            Save & Proceed
+            {loading ? 'Saving...' : 'Save & Proceed'}
           </button>
         </div>
       </div>
 
       {/* Parameter Modal */}
       {showParameterModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 50
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '12px',
-            width: '400px',
-            maxWidth: '90%',
-            padding: '24px',
-            position: 'relative',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
-          }}>
-            <h2 style={{
-              marginBottom: '16px',
-              fontSize: '18px',
-              fontWeight: '600',
-              borderBottom: '1px solid #eee',
-              paddingBottom: '12px'
-            }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-header">
               Select Parameters
-              <button onClick={() => setShowParameterModal(false)} style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'none',
-                border: 'none',
-                fontSize: '20px',
-                cursor: 'pointer',
-                color: '#6b7280'
-              }}>&times;</button>
+              <button 
+                onClick={() => setShowParameterModal(false)} 
+                className="modal-close"
+              >
+                &times;
+              </button>
             </h2>
 
             <div>
-              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#7c3aed' }}>
-                Process Granularity
-              </div>
+              <div className="modal-section-title">Process Granularity</div>
               {[1, 2, 3, 4, 5].map((level) => (
-                <label key={level} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', fontSize: '14px' }}>
+                <label key={level} className="modal-option">
                   <input
                     type="radio"
                     name="parameterLevel"
                     value={level}
                     checked={parameterLevel === level}
                     onChange={() => setParameterLevel(level)}
-                    style={{ marginRight: '8px' }}
+                    className="modal-radio"
                   />
                   Level {level}
                 </label>
               ))}
             </div>
 
-            <div style={{ marginTop: '24px', textAlign: 'right' }}>
+            <div className="modal-footer">
               <button
                 onClick={() => {
                   setSelectedLevel(parameterLevel);
                   setShowParameterModal(false);
                 }}
-                style={{
-                  backgroundColor: '#7c3aed',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500'
-                }}
+                className="modal-save-button"
               >
                 Save
               </button>
@@ -1816,13 +1228,11 @@ const FunctionalScope = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
 
 export default FunctionalScope;
-
 
 
 

@@ -15,6 +15,7 @@ import FuncAreaPage from './pages/DecisionTree/FuncAreaPage';
 import IndustryTypeFunc from './pages/DecisionTree/IndustryTypeFunc';
 import IndustryTypePlannD from './pages/DecisionTree/IndustryTypePlannD';
 import FunctionalScope from './pages/DecisionTree/FunctionalScope';
+import NonFunctionalScope from './pages/DecisionTree/NonFunctionalScope';
 
 // import FinalPage from './pages/DigitalWayFinderr/FinalPage';
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/decision-tree/industry-type-func" element={<IndustryTypeFunc />} />
           <Route path="/decision-tree/industry-type-plannd" element={<IndustryTypePlannD />} />
           <Route path="/decision-tree/functional-scope" element={<FunctionalScope />} />
+          <Route path="/decision-tree/non-functional-scope" element={<NonFunctionalScope />} />
 
           {/* <Route path="/digital-wayfinder/final" element={<FinalPage />} /> */}
         </Routes>
