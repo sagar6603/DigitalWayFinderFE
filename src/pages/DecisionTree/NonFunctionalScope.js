@@ -13,6 +13,7 @@ const NonFunctionalScope = () => {
   const [selectedLevel, setSelectedLevel] = useState(1);
   const [showParameterModal, setShowParameterModal] = useState(false);
   const [parameterLevel, setParameterLevel] = useState(1);
+    const [proceedToDecisionCriteria, setProceedToDecisionCriteria] = useState(false);
 
   // Mock API data for Non Functional Requirements
   const mockApiData = [
@@ -179,7 +180,9 @@ const NonFunctionalScope = () => {
       )
     );
   };
-
+if (proceedToDecisionCriteria) {
+    return <DecisionCriteria />;
+  }
   // Get unique items for a specific level based on selected path
   const getLevelItems = (level) => {
     const filteredData = getFilteredData();
@@ -558,7 +561,7 @@ const NonFunctionalScope = () => {
         <div className="footer-content">
           <button
             className="proceed-button"
-            onClick={handleSaveAndProceed}
+              onClick={() => setProceedToDecisionCriteria(true)}
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Save & Proceed'}
