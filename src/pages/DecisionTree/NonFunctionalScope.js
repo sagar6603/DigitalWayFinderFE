@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Add this import
-// import './NonFunctionalScope.css';
+import './NonFunctionalScope.css';
 
 const NonFunctionalScope = () => {
   const navigate = useNavigate(); // Add this hook
@@ -456,8 +456,12 @@ const NonFunctionalScope = () => {
           {/* Step indicators */}
           <div className="steps-container">
             <div className="step-item">
-              <div className="step-circle inactive">1</div>
-              <span className="step-text inactive">Functional Scope</span>
+              <div className="step-circle completed">
+                <svg className="step-check" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <span className="step-text completed">Functional Scope</span>
             </div>
             
             <div className="step-item">
