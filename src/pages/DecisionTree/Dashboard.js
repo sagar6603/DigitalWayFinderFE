@@ -288,9 +288,14 @@
 import React, { useState } from 'react';
 import { Home, ChevronRight, Info, BarChart3, GitCompare, Target, TrendingUp} from 'lucide-react';
 import styles from './Dashboard.module.css';
+import DecisionSummaryModal from './DecisionSummaryModal';
+
+
 
 const ExecutiveDashboard = () => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
 
   const samplePowerBIData = {
     industryAgnostic: {
@@ -347,15 +352,15 @@ const ExecutiveDashboard = () => {
   ];
 
   const sidebarItems = [
-    {
-      name: "Executive Dashboard",
-      icon: BarChart3,
-      active: true,
-      description: "To view key business data at a glance, helping to understand performance and make decisions."
-    },
-    { name: "Scorecard", icon: Target, active: false },
-    { name: "Detailed Comparison", icon: GitCompare, active: false },
-    { name: "Functional Fit", icon: TrendingUp, active: false }
+    // {
+    //   name: "Executive Dashboard",
+    //   icon: BarChart3,
+    //   active: true,
+    //   description: "To view key business data at a glance, helping to understand performance and make decisions."
+    // },
+    { name: "Functional Scope", icon: Target, active: false },
+    { name: "Non Functional Scope", icon: GitCompare, active: false },
+    { name: "Appendix", icon: TrendingUp, active: false }
   ];
 
   return (
@@ -381,22 +386,26 @@ const ExecutiveDashboard = () => {
           </div>
         </div>
 
+
         <div className={styles.mainContent}>
-          <div className={styles.breadcrumbs}>
-            {breadcrumbs.map((item, index) => (
-              <React.Fragment key={index}>
-                <div className={styles.breadcrumbItem}>
-                  {index === 0 && <item.icon className={styles.breadcrumbIcon} />}
-                  <a
-                    href={item.href}
-                    className={`${styles.breadcrumbLink} ${index === 0 ? styles.breadcrumbHome : ''}`}
-                  >
-                    {item.label}
-                  </a>
-                </div>
-                {index < breadcrumbs.length - 1 && <ChevronRight className={styles.breadcrumbSeparator} />}
-              </React.Fragment>
-            ))}
+          {/* Breadcrumb Row */}
+          <div className={styles.breadcrumbRow}>
+            <div className={styles.breadcrumbs}>
+              {breadcrumbs.map((item, index) => (
+                <React.Fragment key={index}>
+                  <div className={styles.breadcrumbItem}>
+                    {index === 0 && <item.icon className={styles.breadcrumbIcon} />}
+                    <a
+                      href={item.href}
+                      className={`${styles.breadcrumbLink} ${index === 0 ? styles.breadcrumbHome : ''}`}
+                    >
+                      {item.label}
+                    </a>
+                  </div>
+                  {index < breadcrumbs.length - 1 && <ChevronRight className={styles.breadcrumbSeparator} />}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
 
           <div className={styles.dashboardHeader}>
@@ -410,7 +419,13 @@ const ExecutiveDashboard = () => {
                 <Info className={styles.infoIcon} />
               </button>
             </div>
-            <button className={styles.viewSummaryBtn}>View Summary</button>
+            <button
+  className={styles.viewSummaryBtn}
+  onClick={() => setShowModal(true)}
+>
+  View Summary
+</button>
+
           </div>
 
           <div className={styles.lastUpdated}>
@@ -418,6 +433,7 @@ const ExecutiveDashboard = () => {
           </div>
 
           <div className={styles.powerbiContent}>
+            {/* Top Row - Industry Agnostic and WMS Chart */}
             <div className={styles.contentRow}>
               <div className={`${styles.card} ${styles.industryCard}`}>
                 <div className={styles.cardHeader}>
@@ -459,6 +475,7 @@ const ExecutiveDashboard = () => {
               </div>
             </div>
 
+            {/* Bottom Row - Decision Points and Sankey Chart */}
             <div className={styles.contentRow}>
               <div className={`${styles.card} ${styles.decisionCard}`}>
                 <div className={styles.cardHeader}>
@@ -561,9 +578,9 @@ const ExecutiveDashboard = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
+      <DecisionSummaryModal isOpen={showModal} onClose={() => setShowModal(false)} />
       </div>
     </div>
   );
