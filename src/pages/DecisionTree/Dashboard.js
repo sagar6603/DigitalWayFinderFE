@@ -286,15 +286,7 @@
 // export default ExecutiveDashboard;
 
 import React, { useState } from 'react';
-import {
-  Home,
-  ChevronRight,
-  Info,
-  BarChart3,
-  GitCompare,
-  Target,
-  TrendingUp
-} from 'lucide-react';
+import { Home, ChevronRight, Info, BarChart3, GitCompare, Target, TrendingUp} from 'lucide-react';
 import styles from './Dashboard.module.css';
 
 const ExecutiveDashboard = () => {

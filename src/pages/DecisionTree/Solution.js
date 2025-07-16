@@ -85,7 +85,7 @@ const Solution = () => {
       console.log('Generating dashboard with selected solutions:', selectedSolutions);
 
       // Navigate to dashboard or next step
-      navigate('/dashboard', { 
+      navigate('/decision-tree/dashboard', { 
         state: { 
           fromSolution: true,
           selectedData: dashboardData 
