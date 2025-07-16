@@ -624,7 +624,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NonFunctionalScope.css';
-import DecisionCriteria from './DecisionCriteria';
+import DecisionCriteria from './DecisionCriteria.js';
 
 const NonFunctionalScope = () => {
   const navigate = useNavigate();
@@ -742,7 +742,9 @@ const NonFunctionalScope = () => {
   useEffect(() => {
     setNonFunctionalScopeData(mockApiData);
   }, []);
-
+  if (proceedToDecisionCriteria) {
+    return <DecisionCriteria />;
+  }
   // Check if user has selected from all 4 levels
   const hasAllLevelsSelected = () => {
     return [1, 2, 3, 4].every(level => {
@@ -750,7 +752,7 @@ const NonFunctionalScope = () => {
       return selectedPath[levelKey] && selectedPath[levelKey].length > 0;
     });
   };
-  
+
   // Add this new function for handling Save & Proceed
   const handleSaveAndProceed = async () => {
     try {
@@ -764,7 +766,7 @@ const NonFunctionalScope = () => {
 
       // Set loading state
       setLoading(true);
-
+setProceedToDecisionCriteria(true);
       // Prepare data for next step
       const nonFunctionalData = {
         selectedItems,
@@ -786,12 +788,12 @@ const NonFunctionalScope = () => {
 
 
       // Navigate to Decision Criteria page (step 3)
-      navigate('/decision-tree/decision-criteria', { 
-        state: { 
-          fromNonFunctionalScope: true,
-          selectedData: nonFunctionalData 
-        }
-      });
+      // navigate('/decision-tree/decision-criteria', { 
+      //   state: { 
+      //     fromNonFunctionalScope: true,
+      //     selectedData: nonFunctionalData 
+      //   }
+      // });
 
     } catch (error) {
       console.error('Error saving data:', error);
@@ -1290,6 +1292,7 @@ const NonFunctionalScope = () => {
             <div className="modal-footer">
               <button
                 onClick={() => {
+                  setProceedToDecisionCriteria(true)
                   setSelectedLevel(parameterLevel);
                   setShowParameterModal(false);
                 }}
