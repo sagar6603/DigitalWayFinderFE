@@ -44,9 +44,9 @@ const DecisionSummaryModal = ({ isOpen, onClose }) => {
           {activeTab === 'General Info' && (
             <div className={styles.infoTable}>
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>WMS SYSTEM</div>
+                <div className={styles.infoLabel}>WMS System</div>
                 <div className={styles.infoValue}>
-                  PROJECT INFORMATION
+                  Project Information
                   <div className={styles.infoSubfields}>
                     <div className={styles.infoSubLabel}>Project Type :</div>
                     <div className={styles.infoSubLabel}>Request ID :</div>
@@ -57,12 +57,12 @@ const DecisionSummaryModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>FUNCTIONAL AREA</div>
-                <div className={styles.infoValue}>SUPPLY CHAIN PLANNING</div>
+                <div className={styles.infoLabel}>Functional Area</div>
+                <div className={styles.infoValue}>Supply Chain Planning</div>
               </div>
               <div className={styles.infoRow}>
-                <div className={styles.infoLabel}>INDUSTRY TYPE</div>
-                <div className={styles.infoValue}>INDUSTRY AGNOSTIC</div>
+                <div className={styles.infoLabel}>Industry Type</div>
+                <div className={styles.infoValue}>Industry Agnostic</div>
               </div>
             </div>
           )}

@@ -325,6 +325,15 @@
   transform: scale(1.05);
 }
 
+.solution-logo, .manhattan-logo, .blueyonder-logo {
+  width: 60%;
+  max-width: 320px;
+  min-width: 120px;
+  height: auto;
+  display: block;
+  /* margin: 0 auto; */
+}
+
 /* No Results */
 .no-results {
   text-align: center;
@@ -459,18 +468,18 @@
 }
 
 .solution-logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  height: 100%;
-  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
 }
 
 .solution-logo {
-  max-width: 200px;
-  max-height: 50px;
-  object-fit: contain;
+  width: 60%;
+  max-width: 320px;
+  min-width: 120px;
+  height: auto;
   display: block;
 }
 
