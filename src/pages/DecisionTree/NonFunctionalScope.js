@@ -165,12 +165,12 @@ setProceedToDecisionCriteria(true);
 
 
       // Navigate to Decision Criteria page (step 3)
-      // navigate('/decision-tree/decision-criteria', { 
-      //   state: { 
-      //     fromNonFunctionalScope: true,
-      //     selectedData: nonFunctionalData 
-      //   }
-      // });
+      navigate('/decision-tree/decision-criteria', { 
+        state: { 
+          fromNonFunctionalScope: true,
+          selectedData: nonFunctionalData 
+        }
+      });
 
     } catch (error) {
       console.error('Error saving data:', error);

@@ -200,13 +200,14 @@
 // export default DecisionCriteria;
 
 
+
 // import React, { useState } from "react";
 // import { useLocation, useNavigate } from 'react-router-dom';
 // import './DecisionCriteria.css';
 
 // const initialCriteria = [
-//   { id: 1, label: "Functional", priority: "Critical", inScope: true },
-//   { id: 2, label: "Non-Functional", priority: "Critical", inScope: true },
+//   { id: 1, label: "Functional", inScope: true, weightage: 50 },
+//   { id: 2, label: "Non-Functional", inScope: true, weightage: 50 },
 // ];
 
 // const DecisionCriteria = () => {
@@ -218,12 +219,15 @@
 //   // Get data passed from previous page
 //   const { fromNonFunctionalScope, selectedData } = location.state || {};
 
-//   const handlePriorityChange = (id, value) => {
-//     setCriteria((prev) =>
-//       prev.map((c) =>
-//         c.id === id ? { ...c, priority: value } : c
-//       )
-//     );
+//   const handleWeightageChange = (id, value) => {
+//     const numValue = parseInt(value, 10);
+//     if (numValue >= 0 && numValue <= 100) {
+//       setCriteria((prev) =>
+//         prev.map((c) =>
+//           c.id === id ? { ...c, weightage: numValue } : c
+//         )
+//       );
+//     }
 //   };
 
 //   const handleInScopeChange = (id, checked) => {
@@ -284,7 +288,7 @@
 //           <div className="dc-steps-container">
 //             <div className="dc-step-item">
 //               <div className="dc-step-circle dc-completed">
-//                 <svg className="dc-step-check" viewBox="0 0 24 24" fill="none">
+//                 <svg className="step-check" viewBox="0 0 24 24" fill="none">
 //                   <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 //                 </svg>
 //               </div>
@@ -293,7 +297,7 @@
             
 //             <div className="dc-step-item">
 //               <div className="dc-step-circle dc-completed">
-//                 <svg className="dc-step-check" viewBox="0 0 24 24" fill="none">
+//                 <svg className="step-check" viewBox="0 0 24 24" fill="none">
 //                   <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 //                 </svg>
 //               </div>
@@ -314,22 +318,6 @@
 
 //         {/* Main Content Box */}
 //         <div className="dc-main-content">
-//           {/* Header with buttons */}
-//           <div className="dc-content-header">
-//             <div></div> {/* Empty div for spacing */}
-//             <div className="dc-header-buttons">
-//               <button className="dc-top-button">
-//                 Define Weightage
-//               </button>
-//               <select className="dc-top-select dc-disabled" disabled>
-//                 <option>Custom Criteria</option>
-//               </select>
-//               <button className="dc-top-button">
-//                 Select Parameters
-//               </button>
-//             </div>
-//           </div>
-
 //           {/* Decision Criteria Header */}
 //           <div className="dc-title-section">
 //             <h1 className="dc-page-title">Decision Criteria</h1>
@@ -339,7 +327,7 @@
 //           <div className="dc-table-container">
 //             <div className="dc-table-header">
 //               <div className="dc-header-criteria">Decision Criteria</div>
-//               <div className="dc-header-priority">Priority</div>
+//               <div className="dc-header-weightage">Define Weightage</div>
 //               <div className="dc-header-scope">In-Scope</div>
 //             </div>
 //             <div className="dc-table-content">
@@ -357,13 +345,17 @@
 //                       </button>
 //                       <span className="dc-criteria-label">{c.label}</span>
 //                     </div>
-//                     <div className="dc-priority-cell">
+//                     <div className="dc-weightage-cell">
 //                       <input
-//                         type="text"
-//                         value={c.priority}
-//                         onChange={e => handlePriorityChange(c.id, e.target.value)}
-//                         className="dc-priority-input"
+//                         type="number"
+//                         value={c.weightage}
+//                         onChange={e => handleWeightageChange(c.id, e.target.value)}
+//                         className="dc-weightage-input"
+//                         min="0"
+//                         max="100"
+//                         placeholder="0-100"
 //                       />
+//                       <span className="dc-weightage-percent">%</span>
 //                     </div>
 //                     <div className="dc-scope-cell">
 //                       <input
@@ -422,8 +414,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './DecisionCriteria.css';
 
 const initialCriteria = [
-  { id: 1, label: "Functional", priority: "Critical", inScope: true },
-  { id: 2, label: "Non-Functional", priority: "Critical", inScope: true },
+  { id: 1, label: "Functional", inScope: true },
+  { id: 2, label: "Non-Functional", inScope: true },
 ];
 
 const DecisionCriteria = () => {
@@ -434,14 +426,6 @@ const DecisionCriteria = () => {
 
   // Get data passed from previous page
   const { fromNonFunctionalScope, selectedData } = location.state || {};
-
-  const handlePriorityChange = (id, value) => {
-    setCriteria((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, priority: value } : c
-      )
-    );
-  };
 
   const handleInScopeChange = (id, checked) => {
     setCriteria((prev) =>
@@ -519,7 +503,7 @@ const DecisionCriteria = () => {
             
             <div className="dc-step-item">
               <div className="dc-step-circle dc-active">3</div>
-              <span className="dc-step-text dc-active">Decision Criteria</span>
+              <span className="dc-step-text dc-active">Reviews</span>
             </div>
             
             <div className="dc-step-item">
@@ -531,32 +515,15 @@ const DecisionCriteria = () => {
 
         {/* Main Content Box */}
         <div className="dc-main-content">
-          {/* Header with buttons */}
-          <div className="dc-content-header">
-            <div></div> {/* Empty div for spacing */}
-            <div className="dc-header-buttons">
-              <button className="dc-top-button">
-                Define Weightage
-              </button>
-              <button className="dc-top-button dc-disabled" disabled>
-                Custom Criteria
-              </button>
-              <button className="dc-top-button">
-                Select Parameters
-              </button>
-            </div>
-          </div>
-
           {/* Decision Criteria Header */}
           <div className="dc-title-section">
-            <h1 className="dc-page-title">Decision Criteria</h1>
+            <h1 className="dc-page-title"> Reviews </h1>
           </div>
 
           {/* Table Container */}
           <div className="dc-table-container">
             <div className="dc-table-header">
-              <div className="dc-header-criteria">Decision Criteria</div>
-              <div className="dc-header-priority">Priority</div>
+              <div className="dc-header-criteria">Scope Reviews</div>
               <div className="dc-header-scope">In-Scope</div>
             </div>
             <div className="dc-table-content">
@@ -573,14 +540,6 @@ const DecisionCriteria = () => {
                         {expanded[c.id] ? "−" : "+"}
                       </button>
                       <span className="dc-criteria-label">{c.label}</span>
-                    </div>
-                    <div className="dc-priority-cell">
-                      <input
-                        type="text"
-                        value={c.priority}
-                        onChange={e => handlePriorityChange(c.id, e.target.value)}
-                        className="dc-priority-input"
-                      />
                     </div>
                     <div className="dc-scope-cell">
                       <input

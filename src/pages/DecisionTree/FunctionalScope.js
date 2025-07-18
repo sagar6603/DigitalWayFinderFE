@@ -14,8 +14,6 @@ const FunctionalScope = () => {
   const [showParameterModal, setShowParameterModal] = useState(false);
   const [parameterLevel, setParameterLevel] = useState(1);
 
-
-
   // Mock API data
   const mockApiData = [
     {
@@ -120,13 +118,38 @@ const FunctionalScope = () => {
     setFunctionalScopeData(mockApiData);
   }, []);
 
-  // Check if user has selected from all 4 levels (Level 5 commented out)
-const hasAllLevelsSelected = () => {
-  return [1, 2, 3, 4].every(level => { // Changed from [1, 2, 3, 4, 5] to [1, 2, 3, 4]
-    const levelKey = `l${level}`;
-    return selectedPath[levelKey] && selectedPath[levelKey].length > 0;
-  });
-};
+  // Check if user has selected from all 4 levels
+  const hasAllLevelsSelected = () => {
+    return [1, 2, 3, 4].every(level => {
+      const levelKey = `l${level}`;
+      return selectedPath[levelKey] && selectedPath[levelKey].length > 0;
+    });
+  };
+
+  // Get the maximum level that should be visible based on selections
+  const getMaxVisibleLevel = () => {
+    for (let level = 1; level <= 4; level++) {
+      const levelKey = `l${level}`;
+      if (!selectedPath[levelKey] || selectedPath[levelKey].length === 0) {
+        return level; // Return the first level without selections
+      }
+    }
+    return 4; // All levels have selections
+  };
+
+  // Check if a level should be enabled (visible and clickable)
+  const isLevelEnabled = (level) => {
+    if (level === 1) return true; // Level 1 is always enabled
+    
+    // Check if previous level has selections
+    const prevLevelKey = `l${level - 1}`;
+    return selectedPath[prevLevelKey] && selectedPath[prevLevelKey].length > 0;
+  };
+
+  // Check if a level should be visible
+  const isLevelVisible = (level) => {
+    return level <= getMaxVisibleLevel();
+  };
   
   // Add this new function for handling Save & Proceed
   const handleSaveAndProceed = async () => {
@@ -158,10 +181,7 @@ const hasAllLevelsSelected = () => {
       // Save to localStorage for persistence across pages
       localStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
 
-      // Optional: You can also save to sessionStorage if you prefer
-      // sessionStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
-
-      // Navigate to Decision Criteria page (step 3)
+      // Navigate to page
       navigate('/decision-tree/non-functional-scope', { 
         state: { 
           fromNonFunctionalScope: true,
@@ -267,29 +287,12 @@ const hasAllLevelsSelected = () => {
     
     setSelectedPath(newSelectedPath);
     
-    // Auto-advance logic with reverse support
+    // Auto-advance logic - move to next level when selecting (if not last level)
     if (currentSelections.length > 0 && level < 4) {
-      // Move forward to next level when selecting
       setSelectedLevel(level + 1);
-    } else if (currentSelections.length === 0) {
-      // Move backward when deselecting - find the highest level with selections
-      const updatedPath = { ...newSelectedPath };
-      updatedPath[levelKey] = currentSelections;
-      
-      let highestLevel = 1;
-      for (let i = 4; i >= 1; i--) {
-        const checkLevelKey = `l${i}`;
-        if (updatedPath[checkLevelKey] && updatedPath[checkLevelKey].length > 0) {
-          highestLevel = i;
-          break;
-        }
-      }
-      
-      // If we deselected from current level and there are no selections left,
-      // move to the highest level with selections, or stay at current level if it's level 1
-      if (level > 1 && currentSelections.length === 0) {
-        setSelectedLevel(highestLevel === level ? Math.max(1, level - 1) : highestLevel);
-      }
+    } else if (currentSelections.length === 0 && level > 1) {
+      // Move backward when deselecting - go to previous level
+      setSelectedLevel(level - 1);
     }
     
     const itemId = item.id;
@@ -377,14 +380,12 @@ const hasAllLevelsSelected = () => {
       return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}`;
     } else if (level === 4) {
       return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}.${numberParts[3]}`;
-    // } else if (level === 5) {
-    //   return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}.${numberParts[3]}.${numberParts[4]}`;
     }
     
     return numberParts.join('.');
   };
 
-  const renderLevelColumn = (level, idx, totalColumns = 4) => { // Changed from totalColumns = 4 to match 4 levels
+  const renderLevelColumn = (level, idx, totalColumns = 4) => {
     const levelItems = getLevelItems(level);
     const levelKey = `l${level}`;
     const isLevelActive = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
@@ -603,7 +604,7 @@ const hasAllLevelsSelected = () => {
 
           {/* Multi-column layout */}
           <div className="columns-container">
-            {[1, 2, 3, 4].map((level, idx) => renderLevelColumn(level, idx, 4))} {/* Changed from [1, 2, 3, 4, 5] to [1, 2, 3, 4] and totalColumns to 4 */}
+            {[1, 2, 3, 4].map((level, idx) => renderLevelColumn(level, idx, 4))}
           </div>
         </div>
       </div>
@@ -647,19 +648,32 @@ const hasAllLevelsSelected = () => {
 
             <div>
               <div className="modal-section-title">Process Granularity</div>
-              {[1, 2, 3, 4].map((level) => ( // Changed from [1, 2, 3, 4, 5] to [1, 2, 3, 4]
-                <label key={level} className="modal-option">
-                  <input
-                    type="radio"
-                    name="parameterLevel"
-                    value={level}
-                    checked={parameterLevel === level}
-                    onChange={() => setParameterLevel(level)}
-                    className="modal-radio"
-                  />
-                  Level {level}
-                </label>
-              ))}
+              {[1, 2, 3, 4].map((level) => {
+                // For parameter modal: Level 1 is always enabled, others need previous level selections
+                const isParameterLevelEnabled = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
+                
+                return (
+                  <label 
+                    key={level} 
+                    className={`modal-option ${!isParameterLevelEnabled ? 'disabled' : ''}`}
+                    style={{
+                      opacity: isParameterLevelEnabled ? 1 : 0.4,
+                      cursor: isParameterLevelEnabled ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="parameterLevel"
+                      value={level}
+                      checked={parameterLevel === level}
+                      onChange={() => isParameterLevelEnabled ? setParameterLevel(level) : null}
+                      disabled={!isParameterLevelEnabled}
+                      className="modal-radio"
+                    />
+                    Level {level}
+                  </label>
+                );
+              })}
             </div>
 
             <div className="modal-footer">
@@ -681,5 +695,4 @@ const hasAllLevelsSelected = () => {
 };
 
 export default FunctionalScope;
-
 

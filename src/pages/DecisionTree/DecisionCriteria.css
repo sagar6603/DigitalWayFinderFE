@@ -119,8 +119,8 @@
 }
 
 .dc-step-check {
-  width: 14px;
-  height: 14px;
+  width: 30px;
+  height: 30px;
 }
 
 .dc-step-text {
@@ -246,13 +246,6 @@
 }
 
 .dc-header-criteria {
-  flex: 2;
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.dc-header-priority {
   flex: 1;
   font-size: 14px;
   font-weight: 600;
@@ -281,7 +274,7 @@
 }
 
 .dc-criteria-cell {
-  flex: 2;
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -313,26 +306,6 @@
   color: #374151;
   font-size: 13px;
   line-height: 1.4;
-}
-
-.dc-priority-cell {
-  flex: 1;
-}
-
-.dc-priority-input {
-  width: 90%;
-  padding: 6px 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  font-size: 13px;
-  color: #374151;
-  background: white;
-}
-
-.dc-priority-input:focus {
-  outline: 2px solid #7c3aed;
-  outline-offset: 2px;
-  border-color: #7c3aed;
 }
 
 .dc-scope-cell {
@@ -525,10 +498,6 @@
     font-size: 12px;
   }
 
-  .dc-priority-input {
-    font-size: 12px;
-  }
-
   .dc-scope-checkbox {
     width: 14px;
     height: 14px;
@@ -607,7 +576,6 @@
 .dc-top-button:focus,
 .dc-top-select:focus,
 .dc-expand-button:focus,
-.dc-priority-input:focus,
 .dc-scope-checkbox:focus,
 .dc-footer-button:focus {
   outline: 2px solid #7c3aed;
@@ -621,10 +589,6 @@
   }
   
   .dc-table-row {
-    border: 2px solid #000;
-  }
-  
-  .dc-priority-input {
     border: 2px solid #000;
   }
 }
