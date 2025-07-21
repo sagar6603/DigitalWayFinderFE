@@ -164,6 +164,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './WmsSystem.css';
+import DataAndCloud from './DataAndCloud';
 
 // Import dashboard image
 import dashboardImage from "../../assets/dashboard.png";
@@ -181,6 +182,7 @@ import IBMSterling from "../../assets/ibmsterling.png";
 function WmsSystem() {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [showDataAndCloud, setShowDataAndCloud] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -288,16 +290,12 @@ function WmsSystem() {
   };
 
   const handleFinish = () => {
-    console.log('Selected platforms:', selectedPlatforms);
-    // Navigate to final page or next step
-    navigate('/digital-wayfinder/final', {
-      state: {
-        selectedArea: selectedFunctionalArea,
-        selectedSystem: selectedSystem,
-        selectedPlatforms: selectedPlatforms
-      }
-    });
+    setShowDataAndCloud(true);
   };
+
+  if (showDataAndCloud) {
+    return <DataAndCloud />;
+  }
 
   return (
     <div className="wms-system-page">
