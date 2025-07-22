@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './GenerativeAI.module.css';
+import styles from './AgenticAI.module.css';
 
 const defaultQuestions = [
   'Does the WMS systems provides a dedicated real-time visibility capability across all operations within the warehouse ?',
@@ -26,20 +26,20 @@ const defaultSteps = [
   { label: 'Data and Cloud', status: 'completed' },
   { label: 'Operational Innovations', status: 'completed' },
   { label: 'Visibility and Proactive', status: 'active' },
-  { label: 'Generative AI', status: 'inactive' }
+  { label: 'Agentic AI', status: 'inactive' }
 ];
 
 const aiSteps = [
   { label: 'Data and Cloud', status: 'completed' },
   { label: 'Operational Innovations', status: 'completed' },
   { label: 'Visibility and Proactive', status: 'completed' },
-  { label: 'Generative AI', status: 'active' }
+  { label: 'Agentic AI', status: 'active' }
 ];
 
-const GenerativeAI = ({ ai }) => {
+const AgenticAI = ({ ai }) => {
   const questions = ai ? aiQuestions : defaultQuestions;
   const steps = ai ? aiSteps : defaultSteps;
-  const title = ai ? 'Generative AI' : 'Visibility and Proactive';
+  const title = ai ? 'Agentic AI' : 'Visibility and Proactive';
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
 
   const handleAnswer = (idx, value) => {
@@ -127,4 +127,4 @@ const GenerativeAI = ({ ai }) => {
   );
 };
 
-export default GenerativeAI;
+export default AgenticAI;

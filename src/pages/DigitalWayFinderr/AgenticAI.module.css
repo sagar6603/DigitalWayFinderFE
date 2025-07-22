@@ -138,15 +138,19 @@
 }
 .questionBlock {
   margin-bottom: 22px;
+  position: relative;
 }
 .questionText {
   font-size: 15px;
   font-weight: 500;
   margin-bottom: 10px;
+  padding-left: 28px; /* Reserve space for the number */
+  position: relative;
 }
 .optionsRow {
   display: flex;
   gap: 32px;
+  margin-left: 42px; /* Align with the start of the question text */
 }
 .optionLabel {
   font-size: 14px;

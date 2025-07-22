@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './VisibilityProactive.module.css';
-import GenerativeAI from './GenerativeAI';
+import AgenticAI from './AgenticAI';
 
 const questions = [
   'Does the WMS system provide a dedicated real-time visibility capability across all operations within the warehouse?',
@@ -23,7 +23,7 @@ const steps = [
 
 const VisibilityProactive = () => {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
-  const [showGenerativeAI, setShowGenerativeAI] = useState(false);
+  const [showAgenticAI, setShowAgenticAI] = useState(false);
 
   const handleAnswer = (idx, value) => {
     const updated = [...answers];
@@ -33,11 +33,11 @@ const VisibilityProactive = () => {
 
   const completedCount = answers.filter(Boolean).length;
 
-  if (showGenerativeAI) {
-    console.log('showGenerativeAI',showGenerativeAI);
-    return <GenerativeAI ai />;
+  if (showAgenticAI) {
+    console.log('showAgenticAI', showAgenticAI);
+    return <AgenticAI ai />;
   }
-  console.log('showGenerativeAI');
+  console.log('showAgenticAI');
   return (
     <div className={styles.container}>
       {/* Breadcrumb */}
@@ -108,7 +108,7 @@ const VisibilityProactive = () => {
             <button
               className={styles.saveBtn}
               disabled={completedCount !== questions.length}
-              onClick={() => setShowGenerativeAI(true)}
+              onClick={() => setShowAgenticAI(true)}
             >
               Save & Proceed
             </button>

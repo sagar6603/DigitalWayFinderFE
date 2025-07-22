@@ -178,6 +178,7 @@ import Oracle from "../../assets/Oracle.png";
 import E2Open from "../../assets/e2open.png";
 import FluentCommerce from "../../assets/fluentcommerce.png";
 import IBMSterling from "../../assets/ibmsterling.png";
+import VisibilityProactive from './VisibilityProactive';
 
 function WmsSystem() {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
@@ -294,7 +295,7 @@ function WmsSystem() {
   };
 
   if (showDataAndCloud) {
-    return <DataAndCloud />;
+    return <VisibilityProactive />;
   }
 
   return (
