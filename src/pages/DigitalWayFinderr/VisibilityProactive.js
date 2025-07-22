@@ -18,7 +18,7 @@ const steps = [
   { label: 'Data and Cloud', status: 'completed' },
   { label: 'Operational Innovations', status: 'completed' },
   { label: 'Visibility and Proactive', status: 'active' },
-  { label: 'Generative AI', status: 'inactive' }
+  { label: 'Agentic AI', status: 'inactive' }
 ];
 
 const VisibilityProactive = () => {

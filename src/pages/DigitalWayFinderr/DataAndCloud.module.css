@@ -135,6 +135,7 @@
 .optionsRow {
   display: flex;
   gap: 36px;
+  margin-left:14px;
 }
 .optionLabel {
   font-size: 14px;

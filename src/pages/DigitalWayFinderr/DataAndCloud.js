@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './DataAndCloud.module.css';
+import VisibilityProactive from './VisibilityProactive';
 
 const questions = [
   'Do you use cloud services (Any cloud service provider) to augment WMS capabilities?',
@@ -12,11 +13,12 @@ const steps = [
   { label: 'Data and Cloud', status: 'active' },
   { label: 'Operational Innovations', status: 'inactive' },
   { label: 'Visibility and Proactive', status: 'inactive' },
-  { label: 'Generative AI', status: 'inactive' }
+  { label: 'Agentic  AI', status: 'inactive' }
 ];
 
 const DataAndCloud = () => {
   const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [showVisibilityProactive, setShowVisibilityProactive] = useState(false);
 
   const handleAnswer = (idx, value) => {
     const updated = [...answers];
@@ -25,6 +27,10 @@ const DataAndCloud = () => {
   };
 
   const completedCount = answers.filter(Boolean).length;
+
+  if (showVisibilityProactive) {
+    return <VisibilityProactive />;
+  }
 
   return (
     <div className={styles.container}>
@@ -83,7 +89,13 @@ const DataAndCloud = () => {
         </div>
         <div className={styles.buttonRow}>
           <button className={styles.prevBtn}>Previous</button>
-          <button className={styles.saveBtn} disabled={completedCount !== questions.length}>Save & Proceed</button>
+          <button
+            className={styles.saveBtn}
+            disabled={completedCount !== questions.length}
+            onClick={() => setShowVisibilityProactive(true)}
+          >
+            Save & Proceed
+          </button>
         </div>
       </div>
     </div>

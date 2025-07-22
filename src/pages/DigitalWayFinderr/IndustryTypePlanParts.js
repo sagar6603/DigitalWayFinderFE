@@ -147,9 +147,9 @@ function IndustryTypePlanParts() {
       </div>
 
       <div className="tabs">
-        <div className="tab">FUNCTIONAL AREA</div>
-        <div className="tab">INDUSTRY TYPE</div>
-        <div className="tab active">SYSTEM</div>
+        <div className="tab">Functional Area</div>
+        <div className="tab">Industry Type</div>
+        <div className="tab active">System</div>
       </div>
 
       <div className="content-area">

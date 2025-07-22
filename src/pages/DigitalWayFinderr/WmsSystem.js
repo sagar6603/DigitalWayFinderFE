@@ -295,7 +295,7 @@ function WmsSystem() {
   };
 
   if (showDataAndCloud) {
-    return <VisibilityProactive />;
+    return <DataAndCloud />;
   }
 
   return (
@@ -305,9 +305,9 @@ function WmsSystem() {
       </div>
 
       <div className="tabs">
-        <div className="tab">FUNCTIONAL AREA</div>
-        <div className="tab">SUB FUNCTIONAL AREA</div>
-        <div className="tab active">SYSTEM</div>
+        <div className="tab">Functional Area</div>
+        <div className="tab">Sub Functional Area</div>
+        <div className="tab active">System</div>
       </div>
 
       <div className="content-area">
