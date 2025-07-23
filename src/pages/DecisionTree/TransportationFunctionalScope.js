@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import './FunctionalScope.css';
 
-const FunctionalScope = () => {
+const TransportationFunctionalScope = () => {
   const navigate = useNavigate(); 
   const [functionalScopeData, setFunctionalScopeData] = useState([]);
   const [selectedPath, setSelectedPath] = useState({});
@@ -712,5 +712,5 @@ const FunctionalScope = () => {
   );
 };
 
-export default FunctionalScope;
+export default TransportationFunctionalScope;
 

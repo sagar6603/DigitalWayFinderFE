@@ -39,15 +39,21 @@ function IndustryTypeFunc() {
         selectedSystem: selectedSystem
       }
     });
-  } else{
+  } else if(selectedSystem === 'transportation-management') {
+    navigate('/decision-tree/transportation-functional-scope', {
+      state: {
+        selectedArea: selectedFunctionalArea,
+        selectedSystem: selectedSystem
+      }
+    });
+  } else {
     navigate('/decision-tree/', {
-        state: {
-          selectedArea: selectedFunctionalArea,
-          selectedSystem: selectedSystem
-        
-        }
-      });
-    }
+      state: {
+        selectedArea: selectedFunctionalArea,
+        selectedSystem: selectedSystem
+      }
+    });
+  }
   };
 
 

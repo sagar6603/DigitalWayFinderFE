@@ -19,6 +19,7 @@ import NonFunctionalScope from './pages/DecisionTree/NonFunctionalScope';
 import Solution from './pages/DecisionTree/Solution';
 import Dashboard from './pages/DecisionTree/Dashboard';
 import DecisionCriteria from './pages/DecisionTree/DecisionCriteria';
+import TransportationFunctionalScope from './pages/DecisionTree/TransportationFunctionalScope';
 
 
 // import FinalPage from './pages/DigitalWayFinderr/FinalPage';
@@ -51,6 +52,7 @@ function App() {
           <Route path="/decision-tree/solution" element={<Solution />} />
           <Route path="/decision-tree/dashboard" element={<Dashboard/>} />
           <Route path="/decision-tree/decision-criteria" element={<DecisionCriteria/>} />
+          <Route path="/decision-tree/transportation-functional-scope" element={<TransportationFunctionalScope />} />
 
           {/* <Route path="/digital-wayfinder/final" element={<FinalPage />} /> */}
         </Routes>
