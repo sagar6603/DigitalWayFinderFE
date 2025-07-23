@@ -8,6 +8,8 @@ import IndustryTypeFullfillment from './pages/DigitalWayFinderr/IndustryTypeFull
 import IndustryTypePlanning from './pages/DigitalWayFinderr/IndustryTypePlanning';
 import IndustryTypePlanParts from './pages/DigitalWayFinderr/IndustryTypePlanParts';
 import WmsSystem from './pages/DigitalWayFinderr/WmsSystem';
+import Operational from './pages/DigitalWayFinderr/Operational';
+
 
 //Decision Tree imports
 import ProjectInfo from './pages/DecisionTree/ProjectInfo';
@@ -40,6 +42,7 @@ function App() {
           <Route path="/digital-wayfinder/industry-type-planning" element={<IndustryTypePlanning />} />
           <Route path="/digital-wayfinder/industry-type-plan-parts" element={<IndustryTypePlanParts />} />
           <Route path="/digital-wayfinder/wms-system" element={<WmsSystem />} />
+          <Route path="/digital-wayfinder/Operational" element={<Operational />} />
 
 
           <Route path="/decision-tree" element={<ProjectInfo />} />

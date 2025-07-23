@@ -119,9 +119,11 @@ const NonFunctionalScope = () => {
   useEffect(() => {
     setNonFunctionalScopeData(mockApiData);
   }, []);
+  
   if (proceedToDecisionCriteria) {
     return <DecisionCriteria />;
   }
+  
   // Check if user has selected from all 4 levels
   const hasAllLevelsSelected = () => {
     return [1, 2, 3, 4].every(level => {
@@ -143,7 +145,8 @@ const NonFunctionalScope = () => {
 
       // Set loading state
       setLoading(true);
-setProceedToDecisionCriteria(true);
+      setProceedToDecisionCriteria(true);
+      
       // Prepare data for next step
       const nonFunctionalData = {
         selectedItems,
@@ -159,10 +162,6 @@ setProceedToDecisionCriteria(true);
 
       // Save to localStorage for persistence across pages
       localStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
-
-      // Optional: You can also save to sessionStorage if you prefer
-      // sessionStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
-
 
       // Navigate to Decision Criteria page (step 3)
       navigate('/decision-tree/decision-criteria', { 
@@ -651,25 +650,37 @@ setProceedToDecisionCriteria(true);
 
             <div>
               <div className="modal-section-title">Requirement Granularity</div>
-              {[1, 2, 3, 4].map((level) => (
-                <label key={level} className="modal-option">
-                  <input
-                    type="radio"
-                    name="parameterLevel"
-                    value={level}
-                    checked={parameterLevel === level}
-                    onChange={() => setParameterLevel(level)}
-                    className="modal-radio"
-                  />
-                  Level {level}
-                </label>
-              ))}
+              {[1, 2, 3, 4].map((level) => {
+                // For parameter modal: Level 1 is always enabled, others need previous level selections
+                const isParameterLevelEnabled = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
+                
+                return (
+                  <label 
+                    key={level} 
+                    className={`modal-option ${!isParameterLevelEnabled ? 'disabled' : ''}`}
+                    style={{
+                      opacity: isParameterLevelEnabled ? 1 : 0.4,
+                      cursor: isParameterLevelEnabled ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="parameterLevel"
+                      value={level}
+                      checked={parameterLevel === level}
+                      onChange={() => isParameterLevelEnabled ? setParameterLevel(level) : null}
+                      disabled={!isParameterLevelEnabled}
+                      className="modal-radio"
+                    />
+                    Level {level}
+                  </label>
+                );
+              })}
             </div>
 
             <div className="modal-footer">
               <button
                 onClick={() => {
-                  setProceedToDecisionCriteria(true)
                   setSelectedLevel(parameterLevel);
                   setShowParameterModal(false);
                 }}
