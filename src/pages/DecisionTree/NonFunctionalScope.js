@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NonFunctionalScope.css';
+import { apiGet, apiPost } from '../../api';
 import DecisionCriteria from './DecisionCriteria.js';
 
 const NonFunctionalScope = () => {
@@ -16,109 +17,23 @@ const NonFunctionalScope = () => {
   const [parameterLevel, setParameterLevel] = useState(1);
   const [proceedToDecisionCriteria, setProceedToDecisionCriteria] = useState(false);
 
-  // Mock API data for Non Functional Requirements
-  const mockApiData = [
-    {
-      "l1": "Performance Requirements",
-      "l2": "Response Time",
-      "l3": "System Response Time",
-      "l4": "API Response Time"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Response Time",
-      "l3": "API Response Time",
-      "l4": "Database Query Response Time"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Response Time",
-      "l3": "Database Query Response Time",
-      "l4": "User Interface Response Time"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Throughput",
-      "l3": "Transaction Throughput",
-      "l4": "Concurrent User Capacity"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Throughput",
-      "l3": "Concurrent User Capacity",
-      "l4": "Data Processing Throughput"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Throughput",
-      "l3": "Data Processing Throughput",
-      "l4": "Network Bandwidth Requirements"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Scalability",
-      "l3": "Horizontal Scalability",
-      "l4": "Vertical Scalability"
-    },
-    {
-      "l1": "Performance Requirements",
-      "l2": "Scalability",
-      "l3": "Vertical Scalability",
-      "l4": "Auto-scaling Capabilities"
-    },
-    {
-      "l1": "Security Requirements",
-      "l2": "Authentication",
-      "l3": "Multi-factor Authentication",
-      "l4": "Single Sign-On (SSO)"
-    },
-    {
-      "l1": "Security Requirements",
-      "l2": "Authentication",
-      "l3": "Single Sign-On (SSO)",
-      "l4": "Role-based Access Control"
-    },
-    {
-      "l1": "Security Requirements",
-      "l2": "Data Protection",
-      "l3": "Data Encryption",
-      "l4": "Data Masking"
-    },
-    {
-      "l1": "Security Requirements",
-      "l2": "Data Protection",
-      "l3": "Data Masking",
-      "l4": "Audit Logging"
-    },
-    {
-      "l1": "Availability Requirements",
-      "l2": "System Uptime",
-      "l3": "High Availability",
-      "l4": "Disaster Recovery"
-    },
-    {
-      "l1": "Availability Requirements",
-      "l2": "System Uptime",
-      "l3": "Disaster Recovery",
-      "l4": "Backup & Restore"
-    },
-    {
-      "l1": "Usability Requirements",
-      "l2": "User Experience",
-      "l3": "Interface Design",
-      "l4": "Accessibility Compliance"
-    },
-    {
-      "l1": "Usability Requirements",
-      "l2": "User Experience",
-      "l3": "Accessibility Compliance",
-      "l4": "Mobile Responsiveness"
-    }
-  ];
-
   useEffect(() => {
-    setNonFunctionalScopeData(mockApiData);
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        // TODO: Use the correct endpoint based on the system/context
+        const data = await apiGet('api/decision-tree/non-functional-scope/wms/all');
+        setNonFunctionalScopeData(data);
+      } catch (err) {
+        setError('Failed to fetch non-functional scope data.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
+
   if (proceedToDecisionCriteria) {
     return <DecisionCriteria />;
   }
@@ -143,32 +58,25 @@ const NonFunctionalScope = () => {
 
       // Set loading state
       setLoading(true);
-setProceedToDecisionCriteria(true);
-      // Prepare data for next step
-      const nonFunctionalData = {
+      // Save non-functional scope
+      await apiPost('api/decision-tree/non-functional-scope/save-details', {
         selectedItems,
         selectedPath,
         searchQuery,
         selectedLevel,
         timestamp: new Date().toISOString()
-      };
-
-      // Log current selections for debugging
-      console.log('Proceeding with selected items:', selectedItems);
-      console.log('Current path:', selectedPath);
-
-      // Save to localStorage for persistence across pages
-      localStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
-
-      // Optional: You can also save to sessionStorage if you prefer
-      // sessionStorage.setItem('nonFunctionalScopeData', JSON.stringify(nonFunctionalScopeData));
-
-
-      // Navigate to Decision Criteria page (step 3)
+      });
+      setProceedToDecisionCriteria(true);
       navigate('/decision-tree/decision-criteria', { 
         state: { 
           fromNonFunctionalScope: true,
-          selectedData: nonFunctionalData 
+          selectedData: {
+            selectedItems,
+            selectedPath,
+            searchQuery,
+            selectedLevel,
+            timestamp: new Date().toISOString()
+          }
         }
       });
 

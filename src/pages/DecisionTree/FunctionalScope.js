@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import './FunctionalScope.css';
+import { apiGet, apiPost } from '../../api';
 
 const FunctionalScope = () => {
   const navigate = useNavigate(); 
@@ -14,126 +15,21 @@ const FunctionalScope = () => {
   const [showParameterModal, setShowParameterModal] = useState(false);
   const [parameterLevel, setParameterLevel] = useState(1);
 
-  // Mock API data
-  const mockApiData = [
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate and Disaggregate",
-      "l4": "Aggregate Consensus Forecasting"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate Consensus Forecasting",
-      "l4": "Aggregate demand data from multiple sources"
-    },
-     {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate Consensus Forecasting",
-      "l4": "Aggregate demand data from multiple sources"
-    },
-     {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate Consensus Forecasting",
-      "l4": "Aggregate demand data from multiple sources"
-    },
-     {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate Consensus Forecasting",
-      "l4": "Aggregate demand data from multiple sources"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Aggregate & Disaggregate",
-      "l3": "Aggregate demand data from multiple sources",
-      "l4": "Release Of Disaggregated Forecast"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Control Products Gross to Net",
-      "l3": "Plan & Review All Sales Deductions",
-      "l4": "Plan & Review Gross Sales"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Control Products Gross to Net",
-      "l3": "Plan & Review Gross Sales",
-      "l4": "Plan Commercial Provisions"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Control Products Gross to Net",
-      "l3": "Plan Commercial Provisions",
-      "l4": "Review & Approve Gross Sales"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Control Products Gross to Net",
-      "l3": "Review & Approve Gross Sales",
-      "l4": "Review & Approve Gross Sales data"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Enrich Forecast",
-      "l3": "Conduct Post Promotion Analysis",
-      "l4": "Document Forecast Assumptions"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Enrich Forecast",
-      "l3": "Document Forecast Assumptions",
-      "l4": "Document Forecast Assumptions data"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Enrich Forecast",
-      "l3": "Document Forecast Assumptions",
-      "l4": "Enrich Demand Forecast"
-    },
-    {
-      "l1": "Finance & Accounting Operations",
-      "l2": "Enrich Forecast",
-      "l3": "Enrich Demand Forecast",
-      "l4": "Enrich Demand Forecast data"
-    },
-    {
-      "l1": "Human Resources Operations",
-      "l2": "Talent Management",
-      "l3": "Recruitment & Selection",
-      "l4": "Job Posting & Advertising"
-    },
-    {
-      "l1": "Human Resources Operations",
-      "l2": "Talent Management",
-      "l3": "Performance Management",
-      "l4": "Performance Reviews"
-    },
-    {
-      "l1": "Human Resources Operations",
-      "l2": "Employee Relations",
-      "l3": "Conflict Resolution",
-      "l4": "Mediation Services"
-    },
-    {
-      "l1": "IT Operations",
-      "l2": "Infrastructure Management",
-      "l3": "Server Management",
-      "l4": "Server Monitoring"
-    },
-    {
-      "l1": "IT Operations",
-      "l2": "Security Management",
-      "l3": "Access Control",
-      "l4": "User Authentication"
-    }
-  ];
-
   useEffect(() => {
-    setFunctionalScopeData(mockApiData);
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        // TODO: Use the correct endpoint based on the system/context
+        const data = await apiGet('api/decision-tree/functional-scope/wms/all');
+        setFunctionalScopeData(data);
+      } catch (err) {
+        setError('Failed to fetch functional scope data.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
   // Check if user has selected from all 4 levels

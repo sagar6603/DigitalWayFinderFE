@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './IndustryTypeFunc.css';
+import { apiPost } from '../../api';
 
 // Import icons - you'll need to add these images to your assets folder
 import warehouseManagementImg from '../../assets/warehouse-management.png';
@@ -11,6 +12,8 @@ import dashboardImage from "../../assets/dashboard.png";
 function IndustryTypeFunc() {
   const [selectedSystem, setSelectedSystem] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -30,30 +33,51 @@ function IndustryTypeFunc() {
     setTooltipVisible(null);
   };
 
-  const handleProceed = () => {
-    // Navigate to the next step or wms page
-    if(selectedSystem ==='warehouse-management'){
-    navigate('/decision-tree/functional-scope', {
-      state: {
-        selectedArea: selectedFunctionalArea,
-        selectedSystem: selectedSystem
+  const handleProceed = async () => {
+    if (!selectedSystem) return;
+    setLoading(true);
+    setError(null);
+    try {
+      if (selectedSystem === 'warehouse-management' || selectedSystem === 'transportation-management') {
+        // Industry Type API for planning
+        await apiPost('api/decision-tree/industry-type/supply-chain-planning/save', {
+          selectedSystem,
+          selectedArea: selectedFunctionalArea
+        });
+      } else if (selectedSystem === 'order-management') {
+        // Sub Functional Area API for fulfillment
+        await apiPost('api/digital-wayfinder/industry-type/supply-chain-fulfillment/save', {
+          selectedSystem,
+          selectedArea: selectedFunctionalArea
+        });
       }
-    });
-  } else if(selectedSystem === 'transportation-management') {
-    navigate('/decision-tree/transportation-functional-scope', {
-      state: {
-        selectedArea: selectedFunctionalArea,
-        selectedSystem: selectedSystem
+      if(selectedSystem ==='warehouse-management'){
+        navigate('/decision-tree/functional-scope', {
+          state: {
+            selectedArea: selectedFunctionalArea,
+            selectedSystem: selectedSystem
+          }
+        });
+      } else if(selectedSystem === 'transportation-management') {
+        navigate('/decision-tree/transportation-functional-scope', {
+          state: {
+            selectedArea: selectedFunctionalArea,
+            selectedSystem: selectedSystem
+          }
+        });
+      } else {
+        navigate('/decision-tree/', {
+          state: {
+            selectedArea: selectedFunctionalArea,
+            selectedSystem: selectedSystem
+          }
+        });
       }
-    });
-  } else {
-    navigate('/decision-tree/', {
-      state: {
-        selectedArea: selectedFunctionalArea,
-        selectedSystem: selectedSystem
-      }
-    });
-  }
+    } catch (err) {
+      setError('Failed to save industry type. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -167,11 +191,12 @@ function IndustryTypeFunc() {
             <div className="progress-text">Completed step 2 of 3</div>
             <button 
               className="finish-button"
-              disabled={!selectedSystem}
+              disabled={!selectedSystem || loading}
               onClick={handleProceed}
             >
-              Proceed
+              {loading ? 'Saving...' : 'Proceed'}
             </button>
+            {error && <div className="form-error">{error}</div>}
           </div>
         </div>
 

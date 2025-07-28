@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './FuncAreaPage.css';
+import { apiPost, apiGet } from '../../api';
 
 // Import icons
 import supplyChainPlanningImg from '../../assets/supply-chain-planning.png';
@@ -13,6 +14,8 @@ function FuncAreaPage() {
   const [projectData, setProjectData] = useState(null);
   const [projectType, setProjectType] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,6 +26,18 @@ function FuncAreaPage() {
       setProjectData(location.state.projectData);
       setProjectType(location.state.projectType);
     }
+    // Fetch functional area from API
+    const fetchFunctionalArea = async () => {
+      try {
+        const data = await apiGet('api/decision-tree/functional-area/get');
+        if (data.functionalArea) {
+          setSelectedArea(data.functionalArea);
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchFunctionalArea();
   }, [location.state]);
 
   // Handle responsive behavior
@@ -59,23 +74,37 @@ function FuncAreaPage() {
     }
   };
 
-  const handleProceed = () => {
-    if (selectedArea === 'supply-chain-planning') {
-      navigate('/decision-tree/industry-type-plannd', {
-        state: {
-          selectedArea,
-          projectData,
-          projectType
-        }
+  const handleProceed = async () => {
+    if (!selectedArea) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await apiPost('api/decision-tree/functional-area/save', {
+        selectedArea,
+        projectData,
+        projectType
       });
-    } else if (selectedArea === 'supply-chain-fulfillment') {
-      navigate('/decision-tree/industry-type-func', {
-        state: {
-          selectedArea,
-          projectData,
-          projectType
-        }
-      });
+      if (selectedArea === 'supply-chain-planning') {
+        navigate('/decision-tree/industry-type-plannd', {
+          state: {
+            selectedArea,
+            projectData,
+            projectType
+          }
+        });
+      } else if (selectedArea === 'supply-chain-fulfillment') {
+        navigate('/decision-tree/industry-type-func', {
+          state: {
+            selectedArea,
+            projectData,
+            projectType
+          }
+        });
+      }
+    } catch (err) {
+      setError('Failed to save functional area. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -190,11 +219,12 @@ function FuncAreaPage() {
             <div className="progress-text">Completed step 1 of 3</div>
             <button
               className="finish-button"
-              disabled={!selectedArea}
+              disabled={!selectedArea || loading}
               onClick={handleProceed}
             >
-              Proceed
+              {loading ? 'Saving...' : 'Proceed'}
             </button>
+            {error && <div className="form-error">{error}</div>}
           </div>
         </div>
 
