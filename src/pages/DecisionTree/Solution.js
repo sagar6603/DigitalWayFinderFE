@@ -6,15 +6,15 @@ import BlueYonder from "../../assets/Blueyonder.png";
 import Korber from "../../assets/Korber.png";
 import Oracle from "../../assets/Oracle.png";
 import SAP from "../../assets/SAP.jpg";
-
+ 
 const Solution = () => {
   const navigate = useNavigate();
   const [selectedSolutions, setSelectedSolutions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-
+ 
+ 
   // Mock solution data with logos - arranged in the order shown in your image
   const solutionData = [
     { id: 'manhattan', name: 'Manhattan', logo: Manhattan },
@@ -23,16 +23,16 @@ const Solution = () => {
     { id: 'oracle', name: 'ORACLE', logo: Oracle },
     { id: 'sap', name: 'SAP', logo: SAP }
   ];
-
+ 
   // Filter solutions based on search query
   const getFilteredSolutions = () => {
     if (!searchQuery) return solutionData;
-    
-    return solutionData.filter(solution => 
+   
+    return solutionData.filter(solution =>
       solution.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
-
+ 
   // Handle solution selection
   const handleSolutionSelect = (solutionId) => {
     setSelectedSolutions(prev => {
@@ -43,24 +43,24 @@ const Solution = () => {
       }
     });
   };
-
+ 
   // Handle select all
   const handleSelectAll = () => {
     const filteredSolutions = getFilteredSolutions();
     const allFilteredIds = filteredSolutions.map(solution => solution.id);
-    
+   
     if (selectedSolutions.length === allFilteredIds.length) {
       setSelectedSolutions([]);
     } else {
       setSelectedSolutions(allFilteredIds);
     }
   };
-
+ 
   // Handle previous button
   const handlePrevious = () => {
     navigate('/decision-tree/decision-criteria');
   };
-
+ 
   // Handle generate dashboard
   const handleGenerateDashboard = async () => {
     try {
@@ -69,29 +69,29 @@ const Solution = () => {
         setTimeout(() => setError(null), 3000);
         return;
       }
-
+ 
       setLoading(true);
-
+ 
       // Prepare data for dashboard
       const dashboardData = {
         selectedSolutions,
         searchQuery,
         timestamp: new Date().toISOString()
       };
-
+ 
       // Note: localStorage usage removed for Claude.ai compatibility
       // localStorage.setItem('solutionData', JSON.stringify(dashboardData));
-
+ 
       console.log('Generating dashboard with selected solutions:', selectedSolutions);
-
+ 
       // Navigate to dashboard or next step
-      navigate('/decision-tree/dashboard', { 
-        state: { 
+      navigate('/decision-tree/dashboard', {
+        state: {
           fromSolution: true,
-          selectedData: dashboardData 
+          selectedData: dashboardData
         }
       });
-
+ 
     } catch (error) {
       console.error('Error generating dashboard:', error);
       setError('Failed to generate dashboard. Please try again.');
@@ -100,10 +100,10 @@ const Solution = () => {
       setLoading(false);
     }
   };
-
+ 
   return (
     <div className="solution-container">
-
+ 
       {/* Breadcrumb */}
       <div className="breadcrumb">
         <div className="breadcrumb-content">
@@ -114,7 +114,7 @@ const Solution = () => {
           <span className="breadcrumb-current">Solution</span>
         </div>
       </div>
-
+ 
       <div className="main-layout">
         {/* Left Sidebar */}
         <div className="left-sidebar">
@@ -124,10 +124,10 @@ const Solution = () => {
             prioritising them based on different measures for informed
             decision-making.
           </p>
-
+ 
           {/* Vertical line connecting all steps */}
           <div className="step-line"></div>
-
+ 
           {/* Step indicators */}
           <div className="steps-container">
             <div className="step-item">
@@ -138,7 +138,7 @@ const Solution = () => {
               </div>
               <span className="step-text completed">Functional Scope</span>
             </div>
-
+ 
             <div className="step-item">
               <div className="step-circle completed">
                 <svg className="step-check" viewBox="0 0 24 24" fill="none">
@@ -147,8 +147,8 @@ const Solution = () => {
               </div>
               <span className="step-text completed">Non Functional Scope</span>
             </div>
-            
-
+           
+ 
             <div className="step-item">
               <div className="step-circle completed">
                 <svg className="step-check" viewBox="0 0 24 24" fill="none">
@@ -157,14 +157,14 @@ const Solution = () => {
               </div>
               <span className="step-text completed">Decision Criteria</span>
             </div>
-            
+           
             <div className="step-item">
               <div className="step-circle active">4</div>
               <span className="step-text active">Solution</span>
             </div>
           </div>
         </div>
-
+ 
         {/* Main Content */}
         <div className="main-content">
           {/* Header with search */}
@@ -189,14 +189,14 @@ const Solution = () => {
               </svg>
             </div>
           </div>
-
+ 
           {/* Solution Section */}
           <div className="solution-section">
             <div className="solution-header">
               <h1 className="solution-title">Solution</h1>
               <div className="solution-controls">
                 <span className="solution-subtitle">Select Solution(s)</span>
-                <button 
+                <button
                   className="select-all-button"
                   onClick={handleSelectAll}
                 >
@@ -204,14 +204,14 @@ const Solution = () => {
                 </button>
               </div>
             </div>
-
+ 
             {/* Error Message */}
             {error && (
               <div className="error-message">
                 {error}
               </div>
             )}
-
+ 
             {/* Solutions Vertical List Layout */}
             <div className="solutions-list">
               {getFilteredSolutions().map((solution) => (
@@ -240,7 +240,7 @@ const Solution = () => {
                 </div>
               ))}
             </div>
-
+ 
             {/* No results message */}
             {getFilteredSolutions().length === 0 && (
               <div className="no-results">
@@ -250,7 +250,7 @@ const Solution = () => {
           </div>
         </div>
       </div>
-
+ 
       {/* Footer */}
       <div className="footer">
         <div className="footer-content">
@@ -273,5 +273,5 @@ const Solution = () => {
     </div>
   );
 };
-
+ 
 export default Solution;

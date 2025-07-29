@@ -129,9 +129,9 @@ function IndustryTypePlanning() {
       </div>
 
       <div className="tabs">
-        <div className="tab">FUNCTIONAL AREA</div>
-        <div className="tab active">INDUSTRY TYPE</div>
-        <div className="tab">SYSTEM</div>
+        <div className="tab">Functional Area</div>
+        <div className="tab active">Industry Type</div>
+        <div className="tab">System</div>
       </div>
 
       <div className="content-area">

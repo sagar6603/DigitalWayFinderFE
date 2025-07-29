@@ -149,7 +149,7 @@
 }
 
 .info-icon:hover {
-  opacity: 0.7;
+  /* opacity: 0.7; */
 }
 
 .tooltip {
@@ -158,31 +158,41 @@
   left: 120%;
   min-width: 260px;
   max-width: 320px;
-  background: #fff;
-  color: #222;
+
+  background-color: #ffffff !important; /* Force solid white */
+  color: #222 !important;
   border-radius: 8px;
   padding: 16px 18px;
   font-size: 14px;
   font-weight: 400;
-  z-index: 9999;
+  
+  z-index: 10000;
   box-shadow: 0 8px 32px rgba(80, 0, 120, 0.18);
   border: 1.5px solid #d1d5db;
-  opacity: 1;
+  
+  opacity: 1 !important;               /* Force fully opaque */
+  backdrop-filter: none !important;    /* Cancel any blur */
+  filter: none !important;             /* Remove filters */
+  
   pointer-events: auto;
   display: block;
-  z-index: 10000;
 }
+
+
 
 .tooltip::after {
   content: '';
   position: absolute;
   top: 18px;
   left: -8px;
+  width: 0;
+  height: 0;
   border-width: 8px;
   border-style: solid;
-  border-color: transparent #fff transparent transparent;
-  filter: drop-shadow(-2px 0 2px rgba(80,0,120,0.08));
+  border-color: transparent #ffffff transparent transparent; /* White arrow to match tooltip background */
+  filter: drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.08)); /* Softer shadow for depth */
 }
+
 
 .tooltip-header {
   font-weight: 700;

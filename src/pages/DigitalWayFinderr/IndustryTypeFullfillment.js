@@ -126,9 +126,9 @@ function IndustryTypeFullfillment() {
       </div>
 
       <div className="tabs">
-        <div className="tab">FUNCTIONAL AREA</div>
-        <div className="tab active">SUB FUNCTIONAL AREA</div>
-        <div className="tab">SYSTEM</div>
+        <div className="tab">Functional Area</div>
+        <div className="tab active">Sub Functional Area</div>
+        <div className="tab">System</div>
       </div>
 
       <div className="content-area">
