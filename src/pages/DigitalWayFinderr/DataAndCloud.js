@@ -71,7 +71,14 @@ const DataAndCloud = () => {
               <div className={styles.questionText}>{idx + 1}. {q}</div>
               <div className={styles.optionsRow}>
                 {['High', 'Medium', 'Low'].map(opt => (
-                  <label key={opt} className={styles.optionLabel}>
+                  <label
+                    key={opt}
+                    className={
+                      styles.optionLabel + ' ' +
+                      (opt === 'High' ? styles.optionHigh : opt === 'Medium' ? styles.optionMedium : styles.optionLow) +
+                      (answers[idx] === opt ? ' ' + styles.selected : '')
+                    }
+                  >
                     <input
                       type="radio"
                       name={`q${idx}`}
@@ -80,22 +87,12 @@ const DataAndCloud = () => {
                       onChange={() => handleAnswer(idx, opt)}
                       className={styles.radio}
                     />
-                    {opt}
+                    <span>{opt}</span>
                   </label>
                 ))}
               </div>
             </div>
           ))}
-        </div>
-        <div className={styles.buttonRow}>
-          <button className={styles.prevBtn}>Previous</button>
-          <button
-            className={styles.saveBtn}
-            disabled={completedCount !== questions.length}
-            onClick={() => setShowVisibilityProactive(true)}
-          >
-            Save & Proceed
-          </button>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './FunctionalScope.css';
 import { apiGet, apiPost } from '../../api';
 
-const FunctionalScope = () => {
+const TransportationFunctionalScope = () => {
   const navigate = useNavigate(); 
   const [functionalScopeData, setFunctionalScopeData] = useState([]);
   const [selectedPath, setSelectedPath] = useState({});
@@ -20,8 +20,7 @@ const FunctionalScope = () => {
       setLoading(true);
       setError(null);
       try {
-        // TODO: Use the correct endpoint based on the system/context
-        const data = await apiGet('api/decision-tree/functional-scope/wms/all');
+        const data = await apiGet('api/decision-tree/functional-scope/tms/all');
         setFunctionalScopeData(data);
       } catch (err) {
         setError('Failed to fetch functional scope data.');
@@ -608,6 +607,5 @@ const FunctionalScope = () => {
   );
 };
 
-export default FunctionalScope;
-
+export default TransportationFunctionalScope;
 
