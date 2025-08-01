@@ -94,6 +94,16 @@ const DataAndCloud = () => {
             </div>
           ))}
         </div>
+        <div className={styles.buttonRow}>
+          <button className={styles.prevBtn}>Previous</button>
+          <button
+            className={styles.saveBtn}
+            disabled={completedCount !== questions.length}
+            onClick={() => setShowVisibilityProactive(true)}
+          >
+            Save & Proceed
+          </button>
+        </div>
       </div>
     </div>
   );

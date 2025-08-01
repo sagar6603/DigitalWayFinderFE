@@ -162,8 +162,8 @@
   }
   .buttonRow {
     display: flex;
-    justify-content: flex-end;
-    gap: 16px;
+    justify-content: space-between;
+    gap: 18px;
   }
   .prevBtn {
     background: #f3f4f6;
