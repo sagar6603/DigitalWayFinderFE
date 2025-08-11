@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './FuncAreaPage.css';
 import { apiPost, apiGet } from '../../api';
-
+ 
 // Import icons
 import supplyChainPlanningImg from '../../assets/supply-chain-planning.png';
 import supplyChainFulfillmentImg from '../../assets/supply-chain-fulfillment.png';
 import dashboardImage from "../../assets/dashboard.png";
-
+ 
 function FuncAreaPage() {
   const [selectedArea, setSelectedArea] = useState(null);
   const [tooltipVisible, setTooltipVisible] = useState(null);
@@ -16,10 +16,10 @@ function FuncAreaPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+ 
   const navigate = useNavigate();
   const location = useLocation();
-
+ 
   // Get project data from navigation state
   useEffect(() => {
     if (location.state) {
@@ -39,65 +39,69 @@ function FuncAreaPage() {
     };
     fetchFunctionalArea();
   }, [location.state]);
-
+ 
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
+ 
     handleResize();
     window.addEventListener('resize', handleResize);
-
+ 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
+ 
   const handleAreaSelect = (area) => {
     setSelectedArea(area);
   };
-
+ 
   const showTooltip = (area) => {
     if (!isMobile) {
       setTooltipVisible(area);
     }
   };
-
+ 
   const hideTooltip = () => {
     if (!isMobile) {
       setTooltipVisible(null);
     }
   };
-
+ 
   const toggleTooltip = (area) => {
     if (isMobile) {
       setTooltipVisible(tooltipVisible === area ? null : area);
     }
   };
-
+ 
   const handleProceed = async () => {
     if (!selectedArea) return;
     setLoading(true);
     setError(null);
     try {
-      await apiPost('api/decision-tree/functional-area/save', {
-        selectedArea,
-        projectData,
-        projectType
-      });
+      console.log('Selected Area:', selectedArea); // Debug line
+      const payload = {
+        functionalArea: selectedArea,
+      };
+      const response = await apiPost('api/decision-tree/functional-area/save', payload);
+ 
+      // Handle response for required functional area
+      if (response && response.functionalArea === "Functional area is required") {
+        setError("Functional area is required");
+        setLoading(false);
+        return;
+      }
+ 
       if (selectedArea === 'supply-chain-planning') {
-        navigate('/decision-tree/industry-type-plannd', {
+        navigate('/decision-tree/industry-type-planning', {
           state: {
-            selectedArea,
-            projectData,
-            projectType
+            functionalArea: selectedArea,
           }
         });
       } else if (selectedArea === 'supply-chain-fulfillment') {
         navigate('/decision-tree/industry-type-func', {
           state: {
-            selectedArea,
-            projectData,
-            projectType
+            functionalArea: selectedArea,
           }
         });
       }
@@ -107,36 +111,36 @@ function FuncAreaPage() {
       setLoading(false);
     }
   };
-
+ 
   const tooltipContent = {
     'supply-chain-planning': 'Supply chain planning strategically balances supply and demand to optimize the flow of goods, services, and information from source to customer. Aligns supply, demand, and financial plans to drive strategic decision-making.',
     'supply-chain-fulfillment': 'Supply chain fulfillment focuses on the execution of orders and delivery to customers. It encompasses warehousing, order processing, inventory management, and logistics to ensure accurate and timely delivery.'
   };
-
+ 
   return (
     <div className="functional-area-page">
       <div className="breadcrumb">
         <Link to="/">Home</Link> &gt; <span>Decision Tree</span>
       </div>
-
+ 
       <div className="tabs">
         <div className="tab">Project Information</div>
         <div className="tab active">Sub-Functional Area</div>
         <div className="tab">Industry Type</div>
       </div>
-
+ 
       <div className="content-area">
         <div className="content-left">
           <h1>Select a Functional Area</h1>
           <p className="subtitle">Begin by choosing a key area</p>
-
+ 
           {/* Display project information if available */}
           {projectData && (
             <div className="project-summary">
               <p><strong>Project:</strong> {projectData.clientName} ({projectType})</p>
             </div>
           )}
-
+ 
           <div className="area-cards">
             <div
               className={`area-card ${selectedArea === 'supply-chain-planning' ? 'selected' : ''}`}
@@ -174,7 +178,7 @@ function FuncAreaPage() {
                 </div>
               </div>
             </div>
-
+ 
             <div
               className={`area-card ${selectedArea === 'supply-chain-fulfillment' ? 'selected' : ''}`}
               onClick={() => handleAreaSelect('supply-chain-fulfillment')}
@@ -211,10 +215,10 @@ function FuncAreaPage() {
                 </div>
               </div>
             </div>
-
+ 
             {/* Additional functional areas can be added here */}
           </div>
-
+ 
           <div className="progress-footer">
             <div className="progress-text">Completed step 1 of 3</div>
             <button
@@ -227,7 +231,7 @@ function FuncAreaPage() {
             {error && <div className="form-error">{error}</div>}
           </div>
         </div>
-
+ 
         <div className="content-right">
           <div className="preview-container">
             <img
@@ -241,5 +245,5 @@ function FuncAreaPage() {
     </div>
   );
 }
-
+ 
 export default FuncAreaPage;

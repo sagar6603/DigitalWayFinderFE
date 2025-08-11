@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import './DecisionCriteria.css';
 import { apiGet } from '../../api';
-
+ 
 const DecisionCriteria = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -10,17 +10,29 @@ const DecisionCriteria = () => {
   const [expanded, setExpanded] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [mappingData, setMappingData] = useState({});
+ 
   // Get data passed from previous page
-  const { fromNonFunctionalScope, selectedData } = location.state || {};
-
+  const { fromNonFunctionalScope, levelSelections } = location.state || {};
+ 
   useEffect(() => {
     async function fetchCriteria() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiGet('api/decision-tree/functional-scope/decision-criteria/get-details');
-        setCriteria(data);
+        // Fetch decision criteria and mapping data (single API)
+        const response = await apiGet('api/decision-tree/functional-scope/decision-criteria/get-details');
+        // Map criteria and mapping data from response
+        setCriteria(response.criteria || []);
+        setMappingData({
+          userId: response.userId,
+          sessionId: response.sessionId,
+          functionalArea: response.functionalArea,
+          industryType: response.industryType,
+          functional: response.functional?.levelSelections ? response.functional : { levelSelections: {} },
+          nonFunctional: response.nonFunctional?.levelSelections ? response.nonFunctional : { levelSelections: {} }
+        });
+
       } catch (err) {
         setError('Failed to fetch decision criteria.');
       } finally {
@@ -29,7 +41,7 @@ const DecisionCriteria = () => {
     }
     fetchCriteria();
   }, []);
-
+ 
   const handleInScopeChange = (id, checked) => {
     setCriteria((prev) =>
       prev.map((c) =>
@@ -37,28 +49,28 @@ const DecisionCriteria = () => {
       )
     );
   };
-
+ 
   const toggleExpand = (id) => {
     setExpanded((prev) => ({
       ...prev,
       [id]: !prev[id]
     }));
   };
-
+ 
   const handlePrevious = () => {
     navigate('/decision-tree/non-functional-scope');
   };
-
+ 
   const handleProceed = () => {
     navigate('/decision-tree/solution', {
       state: {
         fromDecisionCriteria: true,
         criteriaData: criteria,
-        previousData: selectedData
+        previousData: levelSelections
       }
     });
   };
-
+ 
   return (
     <div className="decision-criteria-container">
       {/* Breadcrumb */}
@@ -71,7 +83,7 @@ const DecisionCriteria = () => {
           <span className="dc-breadcrumb-current">Decision Criteria</span>
         </div>
       </div>
-
+ 
       <div className="dc-main-layout">
         {/* Left Sidebar Box */}
         <div className="dc-left-sidebar">
@@ -80,10 +92,10 @@ const DecisionCriteria = () => {
             Structured framework for selecting functional requirements,
             prioritising them based on different measures for informed decision-making.
           </p>
-
+ 
           {/* Vertical line connecting all steps */}
           <div className="dc-step-line"></div>
-
+ 
           {/* Step indicators */}
           <div className="dc-steps-container">
             <div className="dc-step-item">
@@ -94,7 +106,7 @@ const DecisionCriteria = () => {
               </div>
               <span className="dc-step-text dc-completed">Functional Scope</span>
             </div>
-            
+           
             <div className="dc-step-item">
               <div className="dc-step-circle dc-completed">
                 <svg className="step-check" viewBox="0 0 24 24" fill="none">
@@ -103,26 +115,26 @@ const DecisionCriteria = () => {
               </div>
               <span className="dc-step-text dc-completed">Non Functional</span>
             </div>
-            
+           
             <div className="dc-step-item">
               <div className="dc-step-circle dc-active">3</div>
               <span className="dc-step-text dc-active">Reviews</span>
             </div>
-            
+           
             <div className="dc-step-item">
               <div className="dc-step-circle dc-inactive">4</div>
               <span className="dc-step-text dc-inactive">Solution</span>
             </div>
           </div>
         </div>
-
+ 
         {/* Main Content Box */}
         <div className="dc-main-content">
           {/* Decision Criteria Header */}
           <div className="dc-title-section">
             <h1 className="dc-page-title"> Reviews </h1>
           </div>
-
+ 
           {/* Table Container */}
           <div className="dc-table-container">
             <div className="dc-table-header">
@@ -160,11 +172,38 @@ const DecisionCriteria = () => {
                   {expanded[c.id] && (
                     <div className="dc-expanded-content">
                       Additional details for <b>{c.label}</b> criteria.
-                      {fromNonFunctionalScope && selectedData && (
+                      {/* Show mapped data for Functional Scope */}
+                      {c.id === 'functional' && mappingData?.functional?.levelSelections && (
                         <div className="dc-data-display">
-                          <p><strong>Data from Non-Functional Scope:</strong></p>
+                          <p><strong>Functional Level Selections:</strong></p>
+                          <ul>
+                            {Object.entries(mappingData.functional.levelSelections).map(([level, selections]) => (
+                              <li key={level}>
+                                <strong>{level.toUpperCase()}:</strong> {selections.length === 0 ? 'None' : selections.join(', ')}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Show mapped data for Non-Functional Scope */}
+                      {c.id === 'nonFunctional' && mappingData?.nonFunctional?.levelSelections && (
+                        <div className="dc-data-display">
+                          <p><strong>Non-Functional Level Selections:</strong></p>
+                          <ul>
+                            {Object.entries(mappingData.nonFunctional.levelSelections).map(([level, selections]) => (
+                              <li key={level}>
+                                <strong>{level.toUpperCase()}:</strong> {selections.length === 0 ? 'None' : selections.join(', ')}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {/* Show mapped data from previous Non-Functional page if available */}
+                      {c.id === 'nonFunctional' && fromNonFunctionalScope && levelSelections && (
+                        <div className="dc-data-display">
+                          <p><strong>Selections from Non-Functional Scope (Previous Page):</strong></p>
                           <pre className="dc-data-pre">
-                            {JSON.stringify(selectedData, null, 2)}
+                            {JSON.stringify(levelSelections, null, 2)}
                           </pre>
                         </div>
                       )}
@@ -174,7 +213,7 @@ const DecisionCriteria = () => {
               ))}
             </div>
           </div>
-
+ 
           {/* Footer buttons inside main content */}
           <div className="dc-footer-buttons-container">
             <div className="dc-footer-content">
@@ -197,5 +236,6 @@ const DecisionCriteria = () => {
     </div>
   );
 };
-
+ 
 export default DecisionCriteria;
+ 

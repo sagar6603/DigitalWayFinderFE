@@ -7,7 +7,7 @@ import DecisionCriteria from './DecisionCriteria.js';
 const NonFunctionalScope = () => {
   const navigate = useNavigate();
   const [nonFunctionalScopeData, setNonFunctionalScopeData] = useState([]);
-  const [selectedPath, setSelectedPath] = useState({});
+  const [levelSelections, setlevelSelections] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -37,15 +37,17 @@ const NonFunctionalScope = () => {
   if (proceedToDecisionCriteria) {
     return <DecisionCriteria />;
   }
-  // Check if user has selected from all 4 levels
+  
+  // Check if user has selected from all 3 levels
   const hasAllLevelsSelected = () => {
-    return [1, 2, 3, 4].every(level => {
+    return [1, 2, 3].every(level => {
       const levelKey = `l${level}`;
-      return selectedPath[levelKey] && selectedPath[levelKey].length > 0;
+      return levelSelections[levelKey] && levelSelections[levelKey].length > 0;
     });
   };
 
   // Add this new function for handling Save & Proceed
+ // Add this new function for handling Save & Proceed
   const handleSaveAndProceed = async () => {
     try {
       // Validate that user has made selections
@@ -55,31 +57,31 @@ const NonFunctionalScope = () => {
         setTimeout(() => setError(null), 3000);
         return;
       }
-
+ 
       // Set loading state
       setLoading(true);
       // Save non-functional scope
-      await apiPost('api/decision-tree/non-functional-scope/save-details', {
+      await apiPost('api/decision-tree/non-functional-scope/save', {
         selectedItems,
-        selectedPath,
+        levelSelections,
         searchQuery,
         selectedLevel,
         timestamp: new Date().toISOString()
       });
       setProceedToDecisionCriteria(true);
-      navigate('/decision-tree/decision-criteria', { 
-        state: { 
+      navigate('/decision-tree/decision-criteria', {
+        state: {
           fromNonFunctionalScope: true,
           selectedData: {
             selectedItems,
-            selectedPath,
+            levelSelections,
             searchQuery,
             selectedLevel,
             timestamp: new Date().toISOString()
           }
         }
       });
-
+ 
     } catch (error) {
       console.error('Error saving data:', error);
       setError('Failed to save data. Please try again.');
@@ -89,7 +91,7 @@ const NonFunctionalScope = () => {
       setLoading(false);
     }
   };
-
+ 
   // Filter data based on search query
   const getFilteredData = () => {
     if (!searchQuery) return nonFunctionalScopeData;
@@ -111,7 +113,7 @@ const NonFunctionalScope = () => {
     // Filter based on selected path up to the previous level
     for (let i = 1; i < level; i++) {
       const levelKey = `l${i}`;
-      const selectedForLevel = selectedPath[levelKey];
+      const selectedForLevel = levelSelections[levelKey];
       
       if (selectedForLevel && selectedForLevel.length > 0) {
         levelData = levelData.filter(item => 
@@ -143,9 +145,9 @@ const NonFunctionalScope = () => {
 
   // Helper function to get the highest level with selections
   const getHighestSelectedLevel = () => {
-    for (let level = 4; level >= 1; level--) {
+    for (let level = 3; level >= 1; level--) {
       const levelKey = `l${level}`;
-      if (selectedPath[levelKey] && selectedPath[levelKey].length > 0) {
+      if (levelSelections[levelKey] && levelSelections[levelKey].length > 0) {
         return level;
       }
     }
@@ -154,13 +156,13 @@ const NonFunctionalScope = () => {
 
   const handleItemSelect = (item, level) => {
     const levelKey = `l${level}`;
-    const newSelectedPath = { ...selectedPath };
+    const newlevelSelections = { ...levelSelections };
     
-    if (!newSelectedPath[levelKey]) {
-      newSelectedPath[levelKey] = [];
+    if (!newlevelSelections[levelKey]) {
+      newlevelSelections[levelKey] = [];
     }
     
-    const currentSelections = [...newSelectedPath[levelKey]];
+    const currentSelections = [...newlevelSelections[levelKey]];
     const itemIndex = currentSelections.indexOf(item.name);
     
     if (itemIndex > -1) {
@@ -169,26 +171,26 @@ const NonFunctionalScope = () => {
       currentSelections.push(item.name);
     }
     
-    newSelectedPath[levelKey] = currentSelections;
+    newlevelSelections[levelKey] = currentSelections;
     
     // Clear deeper levels when selections change
-    for (let i = level + 1; i <= 4; i++) {
-      delete newSelectedPath[`l${i}`];
+    for (let i = level + 1; i <= 3; i++) {
+      delete newlevelSelections[`l${i}`];
     }
     
-    setSelectedPath(newSelectedPath);
+    setlevelSelections(newlevelSelections);
     
     // Auto-advance logic with reverse support
-    if (currentSelections.length > 0 && level < 4) {
+    if (currentSelections.length > 0 && level < 3) {
       // Move forward to next level when selecting
       setSelectedLevel(level + 1);
     } else if (currentSelections.length === 0) {
       // Move backward when deselecting - find the highest level with selections
-      const updatedPath = { ...newSelectedPath };
+      const updatedPath = { ...newlevelSelections };
       updatedPath[levelKey] = currentSelections;
       
       let highestLevel = 1;
-      for (let i = 4; i >= 1; i--) {
+      for (let i = 3; i >= 1; i--) {
         const checkLevelKey = `l${i}`;
         if (updatedPath[checkLevelKey] && updatedPath[checkLevelKey].length > 0) {
           highestLevel = i;
@@ -286,17 +288,15 @@ const NonFunctionalScope = () => {
       return `${numberParts[0]}.${numberParts[1]}`;
     } else if (level === 3) {
       return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}`;
-    } else if (level === 4) {
-      return `${numberParts[0]}.${numberParts[1]}.${numberParts[2]}.${numberParts[3]}`;
     }
     
     return numberParts.join('.');
   };
 
-  const renderLevelColumn = (level, idx, totalColumns = 4) => {
+  const renderLevelColumn = (level, idx, totalColumns = 3) => {
     const levelItems = getLevelItems(level);
     const levelKey = `l${level}`;
-    const isLevelActive = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
+    const isLevelActive = level === 1 || (levelSelections[`l${level - 1}`] && levelSelections[`l${level - 1}`].length > 0);
 
     return (
       <div
@@ -307,9 +307,9 @@ const NonFunctionalScope = () => {
           <h3 className="column-title">
             LEVEL {level} REQUIREMENT
           </h3>
-          {selectedPath[levelKey] && selectedPath[levelKey].length > 0 && (
+          {levelSelections[levelKey] && levelSelections[levelKey].length > 0 && (
             <div className="column-selected">
-              {selectedPath[levelKey].length} selected
+              {levelSelections[levelKey].length} selected
             </div>
           )}
         </div>
@@ -482,15 +482,15 @@ const NonFunctionalScope = () => {
                 <div className="level-progress">
                   <div 
                     className="level-progress-fill"
-                    style={{ width: `${(getHighestSelectedLevel()) / 4 * 100}%` }}
+                    style={{ width: `${(getHighestSelectedLevel()) / 3 * 100}%` }}
                   />
                 </div>
 
                 <div className="level-buttons">
-                  {[1, 2, 3, 4].map((level) => {
+                  {[1, 2, 3].map((level) => {
                     // Check if this level should be enabled
-                    const isLevelEnabled = level === 1 || (selectedPath[`l${level - 1}`] && selectedPath[`l${level - 1}`].length > 0);
-                    const hasSelections = selectedPath[`l${level}`] && selectedPath[`l${level}`].length > 0;
+                    const isLevelEnabled = level === 1 || (levelSelections[`l${level - 1}`] && levelSelections[`l${level - 1}`].length > 0);
+                    const hasSelections = levelSelections[`l${level}`] && levelSelections[`l${level}`].length > 0;
                     
                     return (
                       <button
@@ -516,7 +516,7 @@ const NonFunctionalScope = () => {
 
           {/* Multi-column layout */}
           <div className="columns-container">
-            {[1, 2, 3, 4].map((level, idx) => renderLevelColumn(level, idx, 4))}
+            {[1, 2, 3].map((level, idx) => renderLevelColumn(level, idx, 3))}
           </div>
         </div>
       </div>
@@ -559,25 +559,37 @@ const NonFunctionalScope = () => {
 
             <div>
               <div className="modal-section-title">Requirement Granularity</div>
-              {[1, 2, 3, 4].map((level) => (
-                <label key={level} className="modal-option">
-                  <input
-                    type="radio"
-                    name="parameterLevel"
-                    value={level}
-                    checked={parameterLevel === level}
-                    onChange={() => setParameterLevel(level)}
-                    className="modal-radio"
-                  />
-                  Level {level}
-                </label>
-              ))}
+              {[1, 2, 3].map((level) => {
+                // For parameter modal: Level 1 is always enabled, others need previous level selections
+                const isParameterLevelEnabled = level === 1 || (levelSelections[`l${level - 1}`] && levelSelections[`l${level - 1}`].length > 0);
+                
+                return (
+                  <label 
+                    key={level} 
+                    className={`modal-option ${!isParameterLevelEnabled ? 'disabled' : ''}`}
+                    style={{
+                      opacity: isParameterLevelEnabled ? 1 : 0.4,
+                      cursor: isParameterLevelEnabled ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="parameterLevel"
+                      value={level}
+                      checked={parameterLevel === level}
+                      onChange={() => isParameterLevelEnabled ? setParameterLevel(level) : null}
+                      disabled={!isParameterLevelEnabled}
+                      className="modal-radio"
+                    />
+                    Level {level}
+                  </label>
+                );
+              })}
             </div>
 
             <div className="modal-footer">
               <button
                 onClick={() => {
-                  setProceedToDecisionCriteria(true)
                   setSelectedLevel(parameterLevel);
                   setShowParameterModal(false);
                 }}
