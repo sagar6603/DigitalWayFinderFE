@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Solution.css';
 import { apiGet, apiPost } from '../../api';
-
+ 
 const Solution = () => {
   const navigate = useNavigate();
   const [solutionData, setSolutionData] = useState([]);
@@ -10,7 +10,7 @@ const Solution = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+ 
   useEffect(() => {
     async function fetchSolutions() {
       setLoading(true);
@@ -26,11 +26,11 @@ const Solution = () => {
     }
     fetchSolutions();
   }, []);
-
+ 
   // Filter solutions based on search query
   const getFilteredSolutions = () => {
     if (!searchQuery) return solutionData;
-    return solutionData.filter(solution => 
+    return solutionData.filter(solution =>
       solution.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
@@ -76,8 +76,8 @@ const Solution = () => {
         searchQuery,
         timestamp: new Date().toISOString()
       });
-      navigate('/decision-tree/dashboard', { 
-        state: { 
+      navigate('/decision-tree/dashboard', {
+        state: {
           fromSolution: true,
           selectedData: {
             selectedSolutions,
@@ -93,6 +93,14 @@ const Solution = () => {
       setLoading(false);
     }
   };
+ 
+  // Example: Mapping only platformImageUrl for Warehouse Management System
+  const warehouseManagementImages = solutionData
+    .filter(item => item.functionalSubArea === "Warehouse Management System")
+    .map(item => item.platformImageUrl);
+ 
+  console.log(warehouseManagementImages);
+  // Output: Array
  
   return (
     <div className="solution-container">
@@ -199,29 +207,29 @@ const Solution = () => {
                 <div className="loading-text">Loading...</div>
               ) : getFilteredSolutions().map((solution) => (
                 <div
-                  key={solution.id}
-                  className={`solution-row ${selectedSolutions.includes(solution.id) ? 'selected' : ''}`}
-                  onClick={() => handleSolutionSelect(solution.id)}
+                  key={solution.id || solution.platformName}
+                  className={`solution-row ${selectedSolutions.includes(solution.id || solution.platformName) ? 'selected' : ''}`}
+                  onClick={() => handleSolutionSelect(solution.id || solution.platformName)}
                 >
                   <div className="solution-checkbox-container">
                     <input
                       type="checkbox"
-                      checked={selectedSolutions.includes(solution.id)}
-                      onChange={() => handleSolutionSelect(solution.id)}
+                      checked={selectedSolutions.includes(solution.id || solution.platformName)}
+                      onChange={() => handleSolutionSelect(solution.id || solution.platformName)}
                       className="solution-checkbox"
                     />
                   </div>
                   <div className="solution-content">
                     <div className="solution-logo-container">
-                      {solution.logo && (
+                      {solution.platformImageUrl && (
                         <img
-                          src={solution.logo}
-                          alt={solution.name}
+                          src={solution.platformImageUrl}
+                          alt={solution.platformName || solution.name}
                           className="solution-logo"
                         />
                       )}
-                      {!solution.logo && (
-                        <span className="solution-name">{solution.name}</span>
+                      {!solution.platformImageUrl && (
+                        <span className="solution-name">{solution.platformName || solution.name}</span>
                       )}
                     </div>
                   </div>
