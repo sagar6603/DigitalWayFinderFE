@@ -55,6 +55,10 @@ function App() {
           <Route path="/decision-tree/dashboard" element={<Dashboard/>} />
           <Route path="/decision-tree/decision-criteria" element={<DecisionCriteria/>} />
           <Route path="/decision-tree/transportation-functional-scope" element={<TransportationFunctionalScope />} />
+          <Route
+            path="/decision-tree/TransportationFunctionalScope"
+            element={<TransportationFunctionalScope />}
+          />
 
           {/* <Route path="/digital-wayfinder/final" element={<FinalPage />} /> */}
         </Routes>
