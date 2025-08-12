@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Operational.css';
 
 const Questionnaire = () => {
   const [currentStep, setCurrentStep] = useState(2);
   const [answers, setAnswers] = useState({});
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
-  const questions = [
-    {
-      id: 1,
-      text: "Is the WMS system capable to integrate with warehouse assets as ASRS/ AGVS/ conveyor belts ?"
-    },
-    {
-      id: 2,
-      text: "Please rate existing WMS's capability to integrate with warehouse assets such as ASRS/AGVs."
-    },
-    {
-      id: 3,
-      text: "Is the WMS system capable of performing optimised pick path planning for forklift drivers/pickers ?"
-    },
-    {
-      id: 4,
-      text: "Do you leverage any cloud based solution to plan optimised picking path for forklift drivers/pickers ?"
-    },
-    {
-      id: 5,
-      text: "Please rate the existing pick path planning capability"
-    },
-    {
-      id: 6,
-      text: "Please rate the WMS system for handling of returns and reverse logistics capability"
-    }
-  ];
+  // Fetch questions from API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/digital-wayfinder/questionaire/operational-innovations/get-questions');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setQuestions(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching questions:', err);
+        setError('Failed to load questions. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
 
   const sidebarItems = [
     { id: 1, title: "Data and Cloud", completed: true },
@@ -42,7 +46,7 @@ const Questionnaire = () => {
   // Calculate completed questions count
   const completedQuestions = Object.keys(answers).filter(key => answers[key]).length;
   const totalQuestions = questions.length;
-  const progressPercentage = (completedQuestions / totalQuestions) * 100;
+  const progressPercentage = totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0;
   const allQuestionsAnswered = completedQuestions === totalQuestions;
 
   const handleAnswerChange = (questionId, value) => {
@@ -58,10 +62,66 @@ const Questionnaire = () => {
     }
   };
 
-  const handleSaveAndProceed = () => {
-    // Handle save and proceed logic
-    console.log('Saving answers:', answers);
+  const handleSaveAndProceed = async () => {
+    try {
+      setSaving(true);
+      
+      // Call API to save answers
+      const response = await fetch('/api/digital-wayfinder/questionaire/operational-innovations/save-answers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          answers: answers,
+          step: 'operational-innovations'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Answers saved successfully:', result);
+      
+      // Navigate to Visibility Proactive component
+      navigate('/digital-wayfinder/visibility-proactive');
+      
+    } catch (err) {
+      console.error('Error saving answers:', err);
+      setError('Failed to save answers. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="questionnaire-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading questions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="questionnaire-container">
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <button 
+            className="btn-primary" 
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="questionnaire-container">
@@ -144,16 +204,16 @@ const Questionnaire = () => {
             <button 
               className="btn-secondary" 
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={currentStep === 1 || saving}
             >
               Previous
             </button>
             <button 
               className="btn-primary" 
               onClick={handleSaveAndProceed}
-              disabled={!allQuestionsAnswered}
+              disabled={!allQuestionsAnswered || saving}
             >
-              Save & Proceed
+              {saving ? 'Saving...' : 'Save & Proceed'}
             </button>
           </div>
         </div>

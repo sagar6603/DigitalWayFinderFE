@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DataAndCloud.module.css';
-import VisibilityProactive from './VisibilityProactive';
-
-const questions = [
-  'Do you use cloud services (Any cloud service provider) to augment WMS capabilities?',
-  'How would you rate existing capability in integrating real-time data to cloud for various use cases?',
-  'Do you have a unified data model as a single source of truth for analytics/AI-ML use cases?',
-  'Does the WMS systems allow seamless integration to all relevant external data such as traffic, weather, shipment tracking etc.?'
-];
+// import VisibilityProactive from './VisibilityProactive';
+import Operational from './Operational';
+import { apiGet } from '../../api';
 
 const steps = [
   { label: 'Data and Cloud', status: 'active' },
@@ -17,8 +12,28 @@ const steps = [
 ];
 
 const DataAndCloud = () => {
-  const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showVisibilityProactive, setShowVisibilityProactive] = useState(false);
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiGet('api/digital-wayfinder/questionaire/data-cloud/get-questions');
+        setQuestions(response.questions || []);
+        setAnswers(Array((response.questions || []).length).fill(null));
+      } catch (err) {
+        setError('Failed to load questions.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchQuestions();
+  }, []);
 
   const handleAnswer = (idx, value) => {
     const updated = [...answers];
@@ -29,7 +44,7 @@ const DataAndCloud = () => {
   const completedCount = answers.filter(Boolean).length;
 
   if (showVisibilityProactive) {
-    return <VisibilityProactive />;
+    return <Operational />;
   }
 
   return (
@@ -59,51 +74,59 @@ const DataAndCloud = () => {
           <span className={styles.breadcrumbCurrent}>Questionnaire</span>
         </div>
         <div className={styles.title}>Data and Cloud</div>
-        <div className={styles.progressRow}>
-          <span className={styles.progressLabel}>Completed question {completedCount}/{questions.length}</span>
-          <div className={styles.progressBarBg}>
-            <div className={styles.progressBarFill} style={{ width: `${(completedCount / questions.length) * 100}%` }} />
-          </div>
-        </div>
-        <div className={styles.questionsList}>
-          {questions.map((q, idx) => (
-            <div key={idx} className={styles.questionBlock}>
-              <div className={styles.questionText}>{idx + 1}. {q}</div>
-              <div className={styles.optionsRow}>
-                {['High', 'Medium', 'Low'].map(opt => (
-                  <label
-                    key={opt}
-                    className={
-                      styles.optionLabel + ' ' +
-                      (opt === 'High' ? styles.optionHigh : opt === 'Medium' ? styles.optionMedium : styles.optionLow) +
-                      (answers[idx] === opt ? ' ' + styles.selected : '')
-                    }
-                  >
-                    <input
-                      type="radio"
-                      name={`q${idx}`}
-                      value={opt}
-                      checked={answers[idx] === opt}
-                      onChange={() => handleAnswer(idx, opt)}
-                      className={styles.radio}
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
+        {loading ? (
+          <div className={styles.loading}>Loading questions...</div>
+        ) : error ? (
+          <div className={styles.error}>{error}</div>
+        ) : (
+          <>
+            <div className={styles.progressRow}>
+              <span className={styles.progressLabel}>Completed question {completedCount}/{questions.length}</span>
+              <div className={styles.progressBarBg}>
+                <div className={styles.progressBarFill} style={{ width: `${(completedCount / questions.length) * 100}%` }} />
               </div>
             </div>
-          ))}
-        </div>
-        <div className={styles.buttonRow}>
-          <button className={styles.prevBtn}>Previous</button>
-          <button
-            className={styles.saveBtn}
-            disabled={completedCount !== questions.length}
-            onClick={() => setShowVisibilityProactive(true)}
-          >
-            Save & Proceed
-          </button>
-        </div>
+            <div className={styles.questionsList}>
+              {questions.map((q, idx) => (
+                <div key={idx} className={styles.questionBlock}>
+                  <div className={styles.questionText}>{idx + 1}. {q}</div>
+                  <div className={styles.optionsRow}>
+                    {['High', 'Medium', 'Low'].map(opt => (
+                      <label
+                        key={opt}
+                        className={
+                          styles.optionLabel + ' ' +
+                          (opt === 'High' ? styles.optionHigh : opt === 'Medium' ? styles.optionMedium : styles.optionLow) +
+                          (answers[idx] === opt ? ' ' + styles.selected : '')
+                        }
+                      >
+                        <input
+                          type="radio"
+                          name={`q${idx}`}
+                          value={opt}
+                          checked={answers[idx] === opt}
+                          onChange={() => handleAnswer(idx, opt)}
+                          className={styles.radio}
+                        />
+                        <span>{opt}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className={styles.buttonRow}>
+              <button className={styles.prevBtn}>Previous</button>
+              <button
+                className={styles.saveBtn}
+                disabled={completedCount !== questions.length}
+                onClick={() => setShowVisibilityProactive(true)}
+              >
+                Save & Proceed
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
