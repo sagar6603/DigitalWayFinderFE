@@ -314,10 +314,12 @@ FunctionalScope.css
   display: flex;
   flex-direction: column;
   transition: opacity 0.2s;
+  padding: 4px 8px;
+  border-right: 2px solid #8b5cf6; /* Add column separator for all levels */
 }
 
-.column:not(:last-child) {
-  border-right: 1px solid #e5e7eb;
+.column:last-child {
+  border-right: none; /* Remove separator for last column */
 }
 
 .column.active {
@@ -936,4 +938,14 @@ FunctionalScope.css
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.aligned-columns-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.aligned-row {
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
 }
